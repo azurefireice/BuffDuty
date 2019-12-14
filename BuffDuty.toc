@@ -1,0 +1,12 @@
+## Interface: 11303
+## X-Min-Interface: 11303
+## Title: BuffDuty
+## Author: Azure
+## Version: 0.1.1
+
+libs\LibStub\LibStub.lua
+libs\AceAddon-3.0\AceAddon-3.0.xml
+libs\AceConsole-3.0\AceConsole-3.0.xml
+
+core.lua
+logic.lua
