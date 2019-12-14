@@ -2,7 +2,7 @@
 ## X-Min-Interface: 11303
 ## Title: BuffDuty
 ## Author: Azure
-## Version: 0.1.1
+## Version: @project-version@
 
 libs\LibStub\LibStub.lua
 libs\AceAddon-3.0\AceAddon-3.0.xml
