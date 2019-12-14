@@ -5,8 +5,6 @@ externals:
   libs/AceConsole-3.0: https://repos.wowace.com/wow/ace3/trunk/AceAddon-3.0
   libs/LibStub: https://repos.wowace.com/wow/libstub/trunk
 
-enable-nolib-creation: no
-
 ignore: # Files and directories beginning with a dot (such as .git) are automatically ignored, as is the pgkmeta file itself.
     - Scripts
     - Readme.md
