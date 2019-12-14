@@ -19,7 +19,6 @@ luac.out
 
 # Libraries
 *.lib
-*libs/
 *.a
 *.la
 *.lo
