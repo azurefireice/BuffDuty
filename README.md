@@ -32,7 +32,6 @@ The idea of an add-on came up when we noticed that it takes too much effort to m
 TODO list
 ------------------
 
-* Do not execute logic for non-raid groups
 * Tune for cases when raid has less then 8 groups
 * Allow selection of channel for communication. I.e. "say", "whisper", "raid" etc.
 * Allow for customized message format output

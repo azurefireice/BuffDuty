@@ -18,6 +18,7 @@ luac.out
 *.pch
 
 # Libraries
+libs/
 *.lib
 *.a
 *.la

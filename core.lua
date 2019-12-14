@@ -1,11 +1,13 @@
 local addonName = "BuffDuty"
-local addon = LibStub("AceAddon-3.0"):NewAddon(addonName, "AceConsole-3.0")
+BuffDuty = LibStub("AceAddon-3.0"):NewAddon(addonName, "AceConsole-3.0")
 local command = "buffduty"
+local getDutiesTable, printDuties
 
-function addon:OnInitialize()
+function BuffDuty:OnInitialize()
     self:RegisterChatCommand(command, "Command")
 end
 
-function addon:Command(input)
-    printDuties(getDutiesTable(), "SAY")
+function BuffDuty:Command(input)
+    local duties = BuffDuty:getDutiesTable()
+    BuffDuty:printDuties(duties, "SAY")
 end
