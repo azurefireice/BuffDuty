@@ -3,7 +3,7 @@
 
     Buff Duty will not post to chat anything if
     * Group is less than 10 people
-    * No mages in group
+    * No mages in group 
     A neat info messages will be shown instead
     
 ### Added ###
