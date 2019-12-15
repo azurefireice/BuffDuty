@@ -1,3 +1,8 @@
+## [0.3.1] - 2019-12-15 ##
+### Bumped version  ###
+    see 0.3.0 for changes
+---
+
 ## [0.3.0] - 2019-12-15 ##
 ### Added tests  ###
   * added command line arguments
@@ -21,7 +26,6 @@
 
    * Library imports
    * Global variables usage in addon
-   
 ---
 
 ## [0.2.1] - 2019-12-14 ##
