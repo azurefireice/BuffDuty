@@ -41,4 +41,3 @@ TODO list
 
   * Allow for customized message format output
   * Support more classes/roles
-
