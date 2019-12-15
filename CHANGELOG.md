@@ -1,3 +1,9 @@
+## [1.0.1] - 2019-12-15 ##
+### Release  ###
+
+  * Bump a version for release version
+---
+
 ## [0.3.3] - 2019-12-15 ##
 ### Visual and UX rework ###
 
