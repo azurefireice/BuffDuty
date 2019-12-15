@@ -1,4 +1,30 @@
-## [0.2.0] - 2019-12-14 ##
+## [0.3.0] - 2019-12-15 ##
+### Added tests  ###
+  * added command line arguments
+    * "s", "say" - message will be posted to "say" channel
+    * "r", "raid" - message will be posted to "raid" channel
+    * "raid" channel is selected by default.
+  * Added tests that can be run manually
+  * added error handling
+  * Improved duty message
+  
+### Added ###
+
+  * error handling
+  * manual tests
+
+### Changed ###
+
+   * Made group assignment message more appealing
+
+### Fixed ###
+
+   * Library imports
+   * Global variables usage in addon
+   
+---
+
+## [0.2.1] - 2019-12-14 ##
 ### Addon execution checks ###
 
     Buff Duty will not post to chat anything if

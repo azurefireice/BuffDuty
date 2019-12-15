@@ -5,8 +5,9 @@ local assignments_message = "Please see the assignments below:"
 local group_too_small_message = "Current Group/Raid is too small. No sense in assigning buffs/de-curses."
 local no_mages_message = "No mages to do buffs/de-curses."
 local single_mage_message = "Looks like we have only 1 mage in the raid today! {rt1}%s{rt1}, dear, could you please do all the buffing/de-cursing?"
+local duty_single_line_message = "Group%d {rt%d} %s {rt%d}"
 
-local function getNameClass(idx)
+function BuffDuty:getNameClass(idx)
     local name, r, sg, lvl, cls_loc, cls = GetRaidRosterInfo(idx)
     return name, cls
 end
@@ -34,7 +35,6 @@ end
 function BuffDuty:getDutiesTable()
     local m_count = GetNumGroupMembers()
     local mages = {}
-    local groups = {}
     local duties = {}
 
     if (m_count < 10) then
@@ -43,16 +43,11 @@ function BuffDuty:getDutiesTable()
     end
 
     for i = 1, m_count, 1 do
-        local name, class = getNameClass(i)
+        local name, class = BuffDuty:getNameClass(i)
         if (class == "MAGE") then
             table.insert(mages, name)
         end
     end
-
-    for i = 1, MAX_GROUPS, 1 do
-        table.insert(groups, "Group" .. i)
-    end
-
 
     if (#mages == 0) then
         printInfoMessage(no_mages_message)
@@ -71,8 +66,8 @@ function BuffDuty:getDutiesTable()
             mage_ixd = #mages
         end
         local mage = mages[mage_ixd]
-        local group = groups[i]
-        table.insert(duties, group .. "-" .. mage)
+        local duty_message = string.format(duty_single_line_message, i, mage_ixd, mage, mage_ixd)
+        table.insert(duties, duty_message)
     end
 
     return duties
@@ -90,7 +85,7 @@ function BuffDuty:printDuties(duties_table, channel_type)
 
     SendChatMessage(title_message, channel_type)
     SendChatMessage(assignments_message, channel_type)
-    for index, value in pairs(duties_table) do
+    for _, value in pairs(duties_table) do
         SendChatMessage(value, channel_type)
     end
 end

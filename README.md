@@ -1,11 +1,16 @@
 Overview
 ========
-This mod allows automatic assignment for buff/debuff duties for mages in [40]raid groups.
+This mod allows automatic assignment for buff/debuff duties for mages in [40]raid groups. By posting a message with assignments to chat.
 
 Usage
 -----
 Mod functionality is available through a simple command
+
 **/buffduty**
+
+It also supports command line argument:
+* "s" or "say" - message will be posted to "say" channel
+* "r" or "raid" - message will be posted to "raid" channel
 
 _Hint_
 The way we currently using it - is we create a custom macro with this command and put it to UI for convenience.
@@ -22,7 +27,7 @@ Some edge cases:
 * If the raid group does not have any mages, it posts a message saying that no mages are available for de-curse.
 * If there is only 1 mage in a raid group, BuffDuty informs that only this mage will do the de-cursing.
 * For cases when there are between 2 and 7 mages in a raid, groups are assigned in a round-robin fashion.
-* When there are 8 and more mages in a raid - groups are properly assigned to mages in a fashion "1 mage - 1 group"
+* When there are 8 and more mages in a raid - groups are properly assigned to first 8 mages in a fashion "1 mage - 1 group"
 
 
 Background
@@ -32,8 +37,6 @@ The idea of an add-on came up when we noticed that it takes too much effort to m
 TODO list
 ------------------
 
-* Tune for cases when raid has less then 8 groups
-* Allow selection of channel for communication. I.e. "say", "whisper", "raid" etc.
 * Allow for customized message format output
 * Support more classes/roles
 

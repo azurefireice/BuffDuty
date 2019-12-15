@@ -19,6 +19,7 @@ luac.out
 
 # Libraries
 libs/
+tests.lua
 *.lib
 *.a
 *.la

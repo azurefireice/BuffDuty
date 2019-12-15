@@ -10,3 +10,4 @@ libs\AceConsole-3.0\AceConsole-3.0.xml
 
 core.lua
 logic.lua
+# tests.lua
