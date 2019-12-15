@@ -1,5 +1,7 @@
 package-as: BuffDuty
 
+enable-nolib-creation: no
+
 externals:
   libs/AceAddon-3.0: https://repos.wowace.com/wow/ace3/trunk/AceAddon-3.0
   libs/AceConsole-3.0: https://repos.wowace.com/wow/ace3/trunk/AceConsole-3.0

@@ -1,3 +1,17 @@
+## [0.3.2] - 2019-12-15 ##
+### Added Battlegrounds support ###
+
+  * "raid" profile also extends to Battlegrounds
+  
+### Added ###
+
+  * Battleground channel support
+
+### Changed ###
+
+   * disabled no-lib file creation
+---
+
 ## [0.3.1] - 2019-12-15 ##
 ### Bumped version  ###
     see 0.3.0 for changes 
