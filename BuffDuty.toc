@@ -1,7 +1,7 @@
 ## Interface: 11303
 ## X-Min-Interface: 11303
-## Title: BuffDuty
-## Author: Azure
+## Title: |cffffe00a•|r|cffd0021aBuff|r|cffff9d00Duty|r|cffffe00a•|r
+## Author: AzureFireIce
 ## Version: @project-version@
 
 libs\LibStub\LibStub.lua

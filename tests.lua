@@ -53,6 +53,7 @@ local function test()
     mock_party_size = 40
     mock_mages_num = 12
     duties = BuffDuty:getDutiesTable()
+    --BuffDuty:printDuties(duties, "SAY")
     assert(#duties == 8, "Duties are not 8 while mages are 12!")
 end
 

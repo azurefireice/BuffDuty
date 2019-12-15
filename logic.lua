@@ -1,11 +1,10 @@
 local MAX_GROUPS = 8
-local buff_duty_info_message_format = "|cffff9d00<|r|cffd0021aBuffDuty|r|cffff9d00>|r |cffffff00%s|r"
-local title_message = "Dear mages, let's support our raid with buffs, de-curses and tasty water!"
-local assignments_message = "Please see the assignments below:"
+local buff_duty_info_message_format = "|cffffe00a•|r|cffd0021aBuff|r|cffff9d00Duty|r|cffffe00a•|r |cffffff00%s|r"
+local title_message = "(Buff Duty) • Dear mages, let's support our raid with buffs, de-curses and tasty water! •"
 local group_too_small_message = "Current Group/Raid is too small. No sense in assigning buffs/de-curses."
 local no_mages_message = "No mages to do buffs/de-curses."
 local single_mage_message = "Looks like we have only 1 mage in the raid today! {rt1}%s{rt1}, dear, could you please do all the buffing/de-cursing?"
-local duty_single_line_message = "Group%d {rt%d} %s {rt%d}"
+local duty_single_line_message = "Group %d: {rt%d} %s {rt%d}"
 
 function BuffDuty:getNameClass(idx)
     local name, r, sg, lvl, cls_loc, cls = GetRaidRosterInfo(idx)
@@ -84,12 +83,7 @@ function BuffDuty:printDuties(duties_table, channel_type)
     end
 
     SendChatMessage(title_message, channel_type)
-    SendChatMessage(assignments_message, channel_type)
     for _, value in pairs(duties_table) do
         SendChatMessage(value, channel_type)
     end
 end
-
-
-
-

@@ -1,3 +1,10 @@
+## [0.3.3] - 2019-12-15 ##
+### Visual and UX rework ###
+
+  * Improved UX of BuffDuty name on addon selection screen
+  * Added BuffDuty name for chat output to promote addon
+---
+
 ## [0.3.2] - 2019-12-15 ##
 ### Added Battlegrounds support ###
 
