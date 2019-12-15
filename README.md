@@ -20,7 +20,7 @@ How does it work?
 Buff Duty performs best when it works in a raid group of ~40 people with ~8 mages. 
 Addon gathers information about the number of number of mages in raid and based on that posts a message that informs which mage is responsible for a specific raid group.
 
-![Example ](https://cdn.discordapp.com/attachments/637278196865433621/655145286045270027/unknown.png "Example usage")
+![Example ](https://cdn.discordapp.com/attachments/643002576144433185/655583630789181448/Screenshot_5.png "Example usage")
 
 Some edge cases:
 
