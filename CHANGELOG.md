@@ -1,3 +1,23 @@
+## [1.1.0] - 2019-12-15 ##
+### Added Druid and Priest support ###
+
+  * Now supporting Druid and Priest
+  * Now supporting additional channel types: custom channel and whisper
+  
+### Added ###
+
+  * Priest buffs/dispel support
+  * Druid buffs/dispel support
+  * Ability to send messages to a custom channel specified by channel name
+  * Ability to send messages privately to people who will do buffs/dispel
+
+### Changed ###
+
+   * Changed output messages. Now messages are grouped by players. E.g. if player is assigned to group 1,4,5 he will receive 1 message.
+   * Changed command line commands. Now format is ```buffduty <class argument> <channel type arg> <channel name arg>```
+   * Changed default no argument behavior: if ```buffduty``` invoked without arguments, "Mage" class on "Whisper" would be selected.
+---
+
 ## [1.0.1] - 2019-12-15 ##
 ### Release  ###
 

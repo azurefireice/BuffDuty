@@ -8,28 +8,44 @@ Mod functionality is available through a simple command
 
 **/buffduty**
 
-Message will be posted to "raid" channel by default
-It also supports command line argument:
+*By default* message will be posted to for `mages` class, as `whisper` for each buffing player.
 
-  * "s" or "say" - message will be posted to "say" channel
-  * "r" or "raid" - message will be posted to "raid" channel 
+It also supports command line arguments in the following format:
+
+```/buffduty <class argument> <channel type arg> <channel name arg>```
+
+* class argument(`case insensitive`) - Specifies class for which BuffDuty is executed.
+    * "m" or "mage" - message will be generated for mages
+    * "d" or "druid" - message will be generated for druids
+    * "p" or "priest" - message will be generated for priests
+* channel type argument(`case insensitive`) - Specifies the channel where the message will be posted.
+    * "s" or "say" - message will be posted to common "say" chat
+    * "r" or "raid" - message will posted to raid chat. If player is in Battleground, message will be posted to BG chat.
+    * "w" or "whisper" - message will be posted to each player with group assigned as a private message.
+    * "c" or "channel" - message will be posted to custom channel, with name specified in *channel name argument*
+* channel name argument(`case insensitive`, `optional`) - Specifies the channel name for custom channel. Only applicable for *custom channel type*, for other channel types will be ignored.
+    * *specify your channel name or number* - provide a channel where you want the message to be posted. E.g. "3", "pvp3", "ACMEGuidHeal"
+  
 
 _Hint_
-The way we currently using it - is we create a custom macro with this command and put it to UI for convenience.
+The way we currently using it - is we create a custom macro with this command and put it to UI for convenience. For example:
+
+`/buffduty priest custom sparksheal` - will send BuffDuty message for *priest* class in a *custom* channel named *sparksheal*  
+`/buffduty m r` - will send BuffDuty message for *mage* class in a *raid* channel  
+`/buffduty druid w` - will send BuffDuty message for *druid* class in private message for each druid  
+![Example ](https://cdn.discordapp.com/attachments/657351161073893396/664546938557038612/unknown.png "Example usage")
 
 How does it work?
 -----------------
-Buff Duty performs best when it works in a raid group of ~40 people with ~8 mages. 
-Addon gathers information about the number of number of mages in raid and based on that posts a message that informs which mage is responsible for a specific raid group.
-
-![Example ](https://cdn.discordapp.com/attachments/643002576144433185/655583630789181448/Screenshot_5.png "Example usage")
+Buff Duty performs best when it works in a raid group of ~40 people with ~8 people that represent the class that buffs/dispells. 
+Addon gathers information about the number of number of said people in the raid and, based on that, posts a message that informs which player is responsible for a specific raid group.
 
 Some edge cases:
 
-  * If the raid group does not have any mages, it posts a message saying that no mages are available for de-curse.
-  * If there is only 1 mage in a raid group, BuffDuty informs that only this mage will do the de-cursing.
-  * For cases when there are between 2 and 7 mages in a raid, groups are assigned in a round-robin fashion.
-  * When there are 8 and more mages in a raid - groups are properly assigned to first 8 mages in a fashion "1 mage - 1 group"
+  * If the raid group does not have any player with specific class, it posts a message saying that no players are available for buffing.
+  * If there is only 1 buffing player in a raid group, BuffDuty informs that only this player will do the buffing.
+  * For cases when there are between 2 and 7 buffing players in a raid, groups are assigned in a round-robin fashion e.g. "Player1 - Groups 1,3,5"
+  * When there are 8 and more buffing players in a raid - groups are properly assigned to first 8 players in a fashion "Player5 - Group 5"
 
 
 Background
@@ -41,3 +57,6 @@ TODO list
 
   * Allow for customized message format output
   * Support more classes/roles
+  * Message localisation
+  * Persisting of state
+  * Form-based UI
