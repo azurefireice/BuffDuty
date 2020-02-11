@@ -8,6 +8,7 @@ externals:
   libs/LibStub: https://repos.wowace.com/wow/libstub/trunk
 
 ignore: # Files and directories beginning with a dot (such as .git) are automatically ignored, as is the pgkmeta file itself.
+    - docs
     - Scripts
     - Readme.md
     - tests.lua

@@ -85,3 +85,15 @@ function BuffDuty:validateArgs(class, ch_type, channel_name)
         end
     end
 end
+
+function BuffDuty:convertExcluded(input)
+    if not input then
+        return {}
+    end
+    local result = {}
+    local excluded = string.gsub(input, "e\{(.*)\}", "%1")
+    for value in string.gmatch(excluded, '([^,]+)') do
+        table.insert(result, value)
+    end
+    return result
+end

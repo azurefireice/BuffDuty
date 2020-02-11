@@ -1,3 +1,17 @@
+## [1.2.0] - 2020-02-11 ##
+### Allowing to exclude players from BuffDuty ###
+  * It is now possible to exclude people from BuffDuty
+  
+### Added ###
+  * Added support for excluding players from BuffDuty. It was done by request from Desaytis
+   to address case of shadow priests in raid, who can't buff.
+  * Added a new argument to /buffduty command to exclude players.
+  * Added Readme section and examples describing how to exclude players.
+  * Added screenshots with examples to repository section `docs`.
+
+### Fixed ###
+  * Fixed title message when posting to channel to be universal and applicable not only to mages.
+
 ## [1.1.0] - 2019-12-15 ##
 ### Added Druid and Priest support ###
 
@@ -14,8 +28,9 @@
 ### Changed ###
 
    * Changed output messages. Now messages are grouped by players. E.g. if player is assigned to group 1,4,5 he will receive 1 message.
-   * Changed command line commands. Now format is ```buffduty <class argument> <channel type arg> <channel name arg>```
-   * Changed default no argument behavior: if ```buffduty``` invoked without arguments, "Mage" class on "Whisper" would be selected.
+   * Changed command line commands. Now format is ```buffduty [class argument] [channel type arg] [channel name arg]```
+   * Changed default no argument behavior: if ```buffduty``` invoked without arguments, "
+   Mage" class on "Whisper" would be selected.
 ---
 
 ## [1.0.1] - 2019-12-15 ##

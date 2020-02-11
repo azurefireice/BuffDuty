@@ -1,11 +1,12 @@
 local MAX_GROUPS = 8
 local buff_duty_info_message_format = "|cffffe00a•|r|cffd0021aBuff|r|cffff9d00Duty|r|cffffe00a•|r |cffffff00%s|r"
-local title_message = "(Buff Duty) • Dear %ss, let's support our raid with buffs, de-curses and tasty water! •"
 local group_too_small_message = "Current Group/Raid is too small. No sense in assigning buffs/dispells."
 local no_class_players_message = "No %sS to do buffs/dispells."
 local single_class_player_message = "Looks like we have only 1 %s in the raid today! {rt1}%s{rt1}, dear, could you please do all the buffing/dispelling?"
 local duty_single_line_message = "{rt%d} %s {rt%d} - Group%s %s"
-local whisper_title_message = "(Buff Duty) • Dear %s, please, support our raid with buffs, dispells, your love and care! •"
+local title_message_content = "please support our raid with buffs, dispells and your love and care! •"
+local public_title_message = "(Buff Duty) • Dear %ss, " .. title_message_content
+local whisper_title_message = "(Buff Duty) • Dear %s, " .. title_message_content
 
 function BuffDuty:getNameClass(idx)
     local name, r, sg, lvl, cls_loc, cls = GetRaidRosterInfo(idx)
@@ -16,6 +17,17 @@ local function printInfoMessage(msg)
     print(string.format(buff_duty_info_message_format, msg))
 end
 
+local function contain_value (table, val)
+    if not table or not val then
+        return false
+    end
+    for index, value in ipairs(table) do
+        if value:lower() == val:lower() then
+            return true
+        end
+    end
+    return false
+end
 -- Debug
 
 --local function dump(o)
@@ -33,7 +45,7 @@ end
 --    end
 --end
 
-function BuffDuty:getDutiesTable(class)
+function BuffDuty:getDutiesTable(class, excluded)
     local m_count = GetNumGroupMembers()
     local class_players_map = {}
     local duties = {}
@@ -46,7 +58,7 @@ function BuffDuty:getDutiesTable(class)
     local class_players_count = 0
     for i = 1, m_count, 1 do
         local name, player_class = BuffDuty:getNameClass(i)
-        if (player_class == class) then
+        if (not contain_value(excluded, name) and player_class == class) then
             class_players_count = class_players_count + 1
             class_players_map[name] = { idx = class_players_count, name = name, groups = {} }
         end
@@ -120,7 +132,7 @@ function BuffDuty:printDuties(class, duties_table, channel_type, channel_name)
         return
     end
 
-    SendChatMessage(string.format(title_message, class:lower()), channel_type, nil, channel_name)
+    SendChatMessage(string.format(public_title_message, class:lower()), channel_type, nil, channel_name)
     for _, value in pairs(duties_table) do
         SendChatMessage(value, channel_type, nil, channel_name)
     end

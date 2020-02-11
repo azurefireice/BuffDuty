@@ -1,6 +1,6 @@
 Overview
 ========
-This mod allows automatic assignment for buff/debuff duties for mages in [40]raid groups. By posting a message with assignments to chat.
+This mod allows automatic assignment for buff/debuff duties for mages, priests, druids in [40]raid groups. By posting a message with assignments to chat.
 
 Usage
 -----
@@ -12,7 +12,7 @@ Mod functionality is available through a simple command
 
 It also supports command line arguments in the following format:
 
-```/buffduty <class argument> <channel type arg> <channel name arg>```
+```/buffduty [class argument] [channel type arg] [channel name arg]```
 
 * class argument(`case insensitive`) - Specifies class for which BuffDuty is executed.
     * "m" or "mage" - message will be generated for mages
@@ -25,6 +25,8 @@ It also supports command line arguments in the following format:
     * "c" or "channel" - message will be posted to custom channel, with name specified in *channel name argument*
 * channel name argument(`case insensitive`, `optional`) - Specifies the channel name for custom channel. Only applicable for *custom channel type*, for other channel types will be ignored.
     * *specify your channel name or number* - provide a channel where you want the message to be posted. E.g. "3", "pvp3", "ACMEGuidHeal"
+* excluded players argument(`case insensitive`, `optional`) - Specifies the channel name for custom channel. Only applicable for *custom channel type*, for other channel types will be ignored.
+    * *`e{<player1>,<player2>,..}`* - provide a list of players you want to exclude from BuffDuty. Please note that players are **comma separated**, no spaces in between. E.g. `e{putris,spaceBag}`.
   
 
 _Hint_
@@ -33,7 +35,10 @@ The way we currently using it - is we create a custom macro with this command an
 `/buffduty priest custom sparksheal` - will send BuffDuty message for *priest* class in a *custom* channel named *sparksheal*  
 `/buffduty m r` - will send BuffDuty message for *mage* class in a *raid* channel  
 `/buffduty druid w` - will send BuffDuty message for *druid* class in private message for each druid  
-![Example ](https://cdn.discordapp.com/attachments/657351161073893396/664546938557038612/unknown.png "Example usage")
+`/buffduty priest w e{Putris,cassi}` - will send BuffDuty message for *druid* class in private message for each druid. It will exclude players "Putris" and "John" from BuffDuty.  
+`/buffduty druid c 5 e{cuernoloco,Xako}` - will send BuffDuty message for *druid* class in a *custom* channel number *5* in player's chats. It will exclude players "Putris" and "John" from BuffDuty.
+![Example1](/docs/example1.png "Example for custom channel")  
+![Example2](/docs/example2.png "Example usage for say channel")
 
 How does it work?
 -----------------
