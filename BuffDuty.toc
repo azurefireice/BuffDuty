@@ -1,13 +1,15 @@
-## Interface: 11303
-## X-Min-Interface: 11303
-## Title: |cffffe00a•|r|cffd0021aBuff|r|cffff9d00Duty|r|cffffe00a•|r
+## Interface: 11304
+## X-Min-Interface: 11304
+## Title:
+
+cffffe00a•|r|cffd0021aBuff|r|cffff9d00Duty|r|cffffe00a•|r
+
 ## Author: AzureFireIce
 ## Version: @project-version@
 
 libs\LibStub\LibStub.lua
 libs\AceAddon-3.0\AceAddon-3.0.xml
 libs\AceConsole-3.0\AceConsole-3.0.xml
-
 core.lua
 logic.lua
 console.lua

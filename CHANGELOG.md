@@ -1,3 +1,6 @@
+## [1.2.1] - 2020-02-11 ##
+### Updated BuffDuty to support wow 1.13.4 classic client.
+
 ## [1.2.0] - 2020-02-11 ##
 ### Allowing to exclude players from BuffDuty ###
   * It is now possible to exclude people from BuffDuty
