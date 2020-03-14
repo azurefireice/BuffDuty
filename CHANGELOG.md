@@ -1,3 +1,18 @@
+## [1.3.0] - 2020-02-11 ##
+### Assignment order improvements, authored by Byron-Miles
+
+### Added ###
+  * Support for an order list, similar to exclude, to allow priority for who will be assigned a 2nd/etc. group first.
+  * Logic to assign players to their own group first, with priority give to non-ordered players.
+  * Logic to assign remaining groups in sequential order; e.g. if there are only 2 Druids and 6 groups then by default Druid1 will be assigned groups 1,2,3 and Druid2 will be assigned groups 4,5,6.
+
+### Changed ###
+  * Logic to check max group number, rather than being fixed at 8; i.e. in a 20 man raid only groups 1-4 would be assigned.
+
+### KUDOS ###
+  * All of the improvements/changes in this version are authored by Byron-Miles. 
+  Thank you, @Byron-Miles for all these wonderful improvements! You rock my world!
+
 ## [1.2.1] - 2020-02-11 ##
 ### Updated BuffDuty to support wow 1.13.4 classic client.
 

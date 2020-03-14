@@ -97,3 +97,15 @@ function BuffDuty:convertExcluded(input)
     end
     return result
 end
+
+function BuffDuty:convertOrder(input)
+    if not input then
+        return {}
+    end
+    local result = {}
+    local order = string.gsub(input, "o\{(.*)\}", "%1")
+    for value in string.gmatch(order, '([^,]+)') do
+        table.insert(result, value)
+    end
+    return result
+end
