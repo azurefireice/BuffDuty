@@ -8,11 +8,16 @@ local CLASS_TO_TEST = "DRUID"
 local CLASS_TO_TEST_REF = CLASS_TO_TEST:lower()
 
 
-local mock_getNameClass = function (self, idx)
-    if (idx <= mock_players_num) then
-        return CLASS_TO_TEST_REF .. idx, CLASS_TO_TEST
+local mock_getNameClassGroup = function(self, idx)
+    local num_groups = mock_party_size / 5
+    local group = idx % num_groups + 1
+    if group > BuffDuty.max_group then
+        BuffDuty.max_group = group
     end
-    return "NotA" .. CLASS_TO_TEST_REF, "!" .. CLASS_TO_TEST
+    if (idx <= mock_players_num) then
+        return CLASS_TO_TEST_REF .. idx, CLASS_TO_TEST, group
+    end
+    return "NotA" .. CLASS_TO_TEST_REF, "!" .. CLASS_TO_TEST, group
 end
 
 function GetNumGroupMembers()
@@ -24,20 +29,20 @@ function BuffDuty:OnInitialize()
     self:RegisterChatCommand(test_command, "TestCommand")
 end
 
-local function dump(o)
-    if type(o) == 'table' then
-        local s = '{ '
-        for k, v in pairs(o) do
-            if type(k) ~= 'number' then
-                k = '"' .. k .. '"'
-            end
-            s = s .. '[' .. k .. '] = ' .. dump(v) .. ','
-        end
-        return s .. '} '
-    else
-        return tostring(o)
-    end
-end
+--function dump(o)
+--    if type(o) == 'table' then
+--        local s = '{ '
+--        for k, v in pairs(o) do
+--            if type(k) ~= 'number' then
+--                k = '"' .. k .. '"'
+--            end
+--            s = s .. '[' .. k .. '] = ' .. dump(v) .. ','
+--        end
+--        return s .. '} '
+--    else
+--        return tostring(o)
+--    end
+--end
 
 
 ---------------
@@ -45,9 +50,9 @@ end
 ---------------
 
 local function test()
-    BuffDuty["getNameClass"] = mock_getNameClass
+    BuffDuty["getNameClassGroup"] = mock_getNameClassGroup
     ---------------
-    mock_party_size = 0
+    mock_party_size = 1
     mock_players_num = 0
     local duties = BuffDuty:getDutiesTable(CLASS_TO_TEST)
     assert(#duties == 0, "Duties are not empty, while group size and players are 0")
@@ -101,7 +106,21 @@ local function test()
     for _, _ in pairs(duties) do
         duties_count = duties_count + 1
     end
+    key, value = next(duties)
+    assert(key == CLASS_TO_TEST_REF .. "5", "Expected druid5 to be first in duty list, got another.")
+    key, value = next(duties, key)
+    assert(key == CLASS_TO_TEST_REF .. "6", "Expected druid6 to be first in duty list, got another.")
     assert(duties_count == 6, "Duties are not 6 while players are 8 and 2 are excluded!")
+    ---------------
+    mock_party_size = 40
+    mock_players_num = 8
+    duties = BuffDuty:getDutiesTable(CLASS_TO_TEST, { "druid1", "druid2", "druid3" }, { "druid3", "druid4" })
+    duties_count = 0
+    for _, _ in pairs(duties) do
+        duties_count = duties_count + 1
+    end
+    assert(duties_count == 5, "Duties are not 6 while players are 8 and 2 are excluded!")
+    ---------------
 end
 
 

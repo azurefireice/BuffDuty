@@ -8,12 +8,12 @@ local title_message_content = "please support our raid with your buffs, love and
 local public_title_message = "(Buff Duty) • Dear %ss, " .. title_message_content
 local whisper_title_message = "(Buff Duty) • Dear %s, " .. title_message_content
 
-local max_group = 1
+BuffDuty.max_group = 1
 
 function BuffDuty:getNameClassGroup(idx)
     local name, r, sg, lvl, cls_loc, cls = GetRaidRosterInfo(idx)
-    if sg > max_group then
-        max_group = sg
+    if sg > BuffDuty.max_group then
+        BuffDuty.max_group = sg
     end
     return name, cls, sg
 end
@@ -65,7 +65,7 @@ function BuffDuty:getDutiesTable(class, excluded, order)
         return {}
     end
 
-    for i = 1, m_count, 1 do
+    for i = 1, m_count do
         local name, player_class, group = BuffDuty:getNameClassGroup(i)
         if (player_class == class and not contains_value_string(excluded, name)) then
             class_players_count = class_players_count + 1
@@ -85,8 +85,8 @@ function BuffDuty:getDutiesTable(class, excluded, order)
     end
 
     -- Calculate how many groups each player will buff, and how many extra groups there are
-    local extra_duties = max_group % class_players_count
-    local duties_per_player = (max_group - extra_duties) / class_players_count
+    local extra_duties = BuffDuty.max_group % class_players_count
+    local duties_per_player = (BuffDuty.max_group - extra_duties) / class_players_count
     --printInfoMessage(string.format("Groups = %d; Count = %d; Duties per player = %d; Extra = %d", max_group, class_players_count, duties_per_player, extra_duties))
 
     local function set_player_duties(player)
@@ -104,18 +104,20 @@ function BuffDuty:getDutiesTable(class, excluded, order)
     end
 
     -- Create ordered list of player names, starting with ordered players and setting duties
-    for _, name in pairs(order) do
-        local player = class_players_map[name]
-        if player then
-            --printInfoMessage(string.format("Ordered %s added at %d", name, ordered_players_count))
-            ordered_players_list[ordered_players_count] = name
-            ordered_players_count = ordered_players_count + 1
-            set_player_duties(player)
+    if order then
+        for _, name in pairs(order) do
+            local player = class_players_map[name]
+            if player then
+                --printInfoMessage(string.format("Ordered %s added at %d", name, ordered_players_count))
+                ordered_players_list[ordered_players_count] = name
+                ordered_players_count = ordered_players_count + 1
+                set_player_duties(player)
+            end
         end
     end
 
     -- Add non-ordered players to ordered players list, settings duties and assigning to their own group first (if needed)
-    local assign_own_group = max_group - ordered_players_count -- Only assign as many as we don't have ordered players to cover
+    local assign_own_group = BuffDuty.max_group - ordered_players_count -- Only assign as many as we don't have ordered players to cover
     local non_ordered_idx = ordered_players_count
     for name, player in pairs(class_players_map) do
         if not contains_value_string(ordered_players_list, name) then
@@ -157,7 +159,7 @@ function BuffDuty:getDutiesTable(class, excluded, order)
 
     -- Assign remaining groups to players in order
     local order_idx = 0
-    for group = 1, max_group, 1 do
+    for group = 1, BuffDuty.max_group, 1 do
         if not group_assigned[group] then
             order_idx, player = next_player(order_idx)
             assign_group(player, group)

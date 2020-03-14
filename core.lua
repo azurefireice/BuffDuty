@@ -16,8 +16,8 @@ local function executeLogic(input)
     if excluded and string.sub(excluded, 1, 1) == "o" then
         order = excluded
     end
-    excluded = BuffDuty:convertExcluded(excluded)
-    order = BuffDuty:convertOrder(order)
+    excluded = BuffDuty:convertPlayerList("e", excluded)
+    order = BuffDuty:convertPlayerList("o", order)
     local duties = BuffDuty:getDutiesTable(class, excluded, order)
     BuffDuty:printDuties(class, duties, ch_type, channel_name)
 end

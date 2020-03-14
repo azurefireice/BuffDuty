@@ -8,6 +8,7 @@
 
 ### Changed ###
   * Logic to check max group number, rather than being fixed at 8; i.e. in a 20 man raid only groups 1-4 would be assigned.
+  * Slight changes to chat messages produced by BuffDuty
 
 ### KUDOS ###
   * All of the improvements/changes in this version are authored by Byron-Miles. 
