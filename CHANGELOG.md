@@ -1,4 +1,4 @@
-## [1.3.0] - 2020-02-11 ##
+## [1.3.0] - 2020-03-14 ##
 ### Assignment order improvements, authored by Byron-Miles
 
 ### Added ###
