@@ -39,7 +39,7 @@ The way we currently using it - is we create a custom macro with this command an
 `/buffduty druid w` - will send BuffDuty message for *druid* class in private message for each druid  
 `/buffduty priest w e{Putris,cassi}` - will send BuffDuty message for *druid* class in private message for each druid. It will exclude players "Putris" and "John" from BuffDuty.  
 `/buffduty druid c 5 e{cuernoloco,Xako}` - will send BuffDuty message for *druid* class in a *custom* channel number *5* in player's chats. It will exclude players "Putris" and "John" from BuffDuty.
-`/buffduty druid c 5 e{cuernoloco,Xako} o{Ryuken, Dimmi, Sentry}` - will send BuffDuty message for *druid* class in a *custom* channel number *5* in player's chats. It will exclude players "Putris" and "John" from BuffDuty. It will prioritise Ryuken, Dimmi, Sentry for buffing.
+`/buffduty druid c 5 e{cuernoloco,Xako} o{Ryuken,Dimmi,Sentry}` - will send BuffDuty message for *druid* class in a *custom* channel number *5* in player's chats. It will exclude players "Putris" and "John" from BuffDuty. It will prioritise Ryuken, Dimmi, and Sentry for additional buffing duties(like receive 2nd group to look after).
 ![Example1](/docs/example1.png "Example for custom channel")  
 ![Example2](/docs/example2.png "Example usage for say channel")
 
