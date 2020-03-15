@@ -86,7 +86,7 @@ function BuffDuty:validateArgs(class, ch_type, channel_name)
     end
 end
 
-function BuffDuty:convertPlayerList(input, identifier)
+function BuffDuty:convertPlayerList(identifier, input)
     if not input then
         return {}
     end
