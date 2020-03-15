@@ -27,7 +27,7 @@ It also supports command line arguments in the following format:
     * *specify your channel name or number* - provide a channel where you want the message to be posted. E.g. "3", "pvp3", "ACMEGuidHeal"
 * excluded players argument(`case insensitive`, `optional`) - Excluding players from buffduty.
     * *`e{<player1>,<player2>,..}`* - provide a list of players you want to exclude from BuffDuty. Please note that players are **comma separated**, no spaces in between. E.g. `e{putris,spaceBag}`.
-* ordered players argument(`case insensitive`, `optional`) - Order list, similar to exclude, to allow priority for who will be assigned a 2nd/etc.
+* ordered players argument(`case insensitive`, `optional`) - additional responsibilities list, similar to exclude, to allow additional duties for priority players. Players specified in this list are likely to get additional buffing duties.
     * *`o{<player3>,<player5>,..}`* - provide a list of players you want to give priority during assignment. Please note that players are **comma separated**, no spaces in between. E.g. `o{putris,spaceBag}`.
   
 
