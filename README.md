@@ -25,8 +25,10 @@ It also supports command line arguments in the following format:
     * "c" or "channel" - message will be posted to custom channel, with name specified in *channel name argument*
 * channel name argument(`case insensitive`, `optional`) - Specifies the channel name for custom channel. Only applicable for *custom channel type*, for other channel types will be ignored.
     * *specify your channel name or number* - provide a channel where you want the message to be posted. E.g. "3", "pvp3", "ACMEGuidHeal"
-* excluded players argument(`case insensitive`, `optional`) - Specifies the channel name for custom channel. Only applicable for *custom channel type*, for other channel types will be ignored.
+* excluded players argument(`case insensitive`, `optional`) - Excluding players from buffduty.
     * *`e{<player1>,<player2>,..}`* - provide a list of players you want to exclude from BuffDuty. Please note that players are **comma separated**, no spaces in between. E.g. `e{putris,spaceBag}`.
+* ordered players argument(`case insensitive`, `optional`) - additional responsibilities list, similar to exclude, to allow additional duties for priority players. Players specified in this list are likely to get additional buffing duties.
+    * *`o{<player3>,<player5>,..}`* - provide a list of players you want to give priority during assignment. Please note that players are **comma separated**, no spaces in between. E.g. `o{putris,spaceBag}`.
   
 
 _Hint_
@@ -37,6 +39,7 @@ The way we currently using it - is we create a custom macro with this command an
 `/buffduty druid w` - will send BuffDuty message for *druid* class in private message for each druid  
 `/buffduty priest w e{Putris,cassi}` - will send BuffDuty message for *druid* class in private message for each druid. It will exclude players "Putris" and "John" from BuffDuty.  
 `/buffduty druid c 5 e{cuernoloco,Xako}` - will send BuffDuty message for *druid* class in a *custom* channel number *5* in player's chats. It will exclude players "Putris" and "John" from BuffDuty.
+`/buffduty druid c 5 e{cuernoloco,Xako} o{Ryuken,Dimmi,Sentry}` - will send BuffDuty message for *druid* class in a *custom* channel number *5* in player's chats. It will exclude players "Putris" and "John" from BuffDuty. It will prioritise Ryuken, Dimmi, and Sentry for additional buffing duties(like receive 2nd group to look after).
 ![Example1](/docs/example1.png "Example for custom channel")  
 ![Example2](/docs/example2.png "Example usage for say channel")
 
@@ -49,13 +52,26 @@ Some edge cases:
 
   * If the raid group does not have any player with specific class, it posts a message saying that no players are available for buffing.
   * If there is only 1 buffing player in a raid group, BuffDuty informs that only this player will do the buffing.
-  * For cases when there are between 2 and 7 buffing players in a raid, groups are assigned in a round-robin fashion e.g. "Player1 - Groups 1,3,5"
+  * For cases when there are between 2 and 7 buffing players in a raid, groups are assigned in a consecutive fashion e.g. "Player1 - Groups 1,2,3"
   * When there are 8 and more buffing players in a raid - groups are properly assigned to first 8 players in a fashion "Player5 - Group 5"
 
 
 Background
 ----------
 The idea of an add-on came up when we noticed that it takes too much effort to manually track all mages in a raid and assign them to a specific group when de-cursing the raid members during our MC runs. It started out as a simple macro that needed to be edited every time raid composition changed. After maintaining it for a couple runs it became apparent to automate this process as well. This is how the Buff Duty was born.
+
+Contributor info
+------------------
+#### Testing
+
+    How to run tests?
+1. In [BuffDuty.toc](BuffDuty.toc) uncomment line `# tests.lua`
+1. ReloadUI in WoW client
+1. Run command `/buffduty-test`
+
+> :bulb: You may use `function dump(o)` in tests to turn tables to strings for printing them.
+
+
 
 TODO list
 ------------------
@@ -65,3 +81,4 @@ TODO list
   * Message localisation
   * Persisting of state
   * Form-based UI
+  

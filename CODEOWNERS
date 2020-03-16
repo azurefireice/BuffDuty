@@ -1,0 +1,8 @@
+# These owners will be the default owners for everything in
+# the repo.
+
+# Creator of the repo
+* @azurefireice
+
+# All .lua changes are very well recognisable by Byron-Miles so he would provide a great help in reviewing changes
+*.lua @Byron-Miles

@@ -86,13 +86,13 @@ function BuffDuty:validateArgs(class, ch_type, channel_name)
     end
 end
 
-function BuffDuty:convertExcluded(input)
+function BuffDuty:convertPlayerList(identifier, input)
     if not input then
         return {}
     end
     local result = {}
-    local excluded = string.gsub(input, "e\{(.*)\}", "%1")
-    for value in string.gmatch(excluded, '([^,]+)') do
+    local players = string.gsub(input, identifier .. "\{(.*)\}", "%1")
+    for value in string.gmatch(players, '([^,]+)') do
         table.insert(result, value)
     end
     return result
