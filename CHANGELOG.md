@@ -1,3 +1,11 @@
+## [1.3.1] - 2020-03-16 ##
+### Bug fixes from 1.3.0
+
+### Fixed ###
+  * Fixed losing 'order' list if a non-custom channel was specified
+  * Fixed incorrect parameter order, compared to usage, in covertPlayersList
+  * Added order argument description to README.md
+
 ## [1.3.0] - 2020-03-14 ##
 ### Assignment order improvements, authored by Byron-Miles
 
