@@ -1,3 +1,9 @@
+## [1.3.2] - 2020-03-16 ##
+### Fix title for addon that prevents it from showing properly.
+
+### Fixed ###
+  * Addon title was formatted incorrectly. Fixed that.
+
 ## [1.3.1] - 2020-03-16 ##
 ### Bug fixes from 1.3.0
 
