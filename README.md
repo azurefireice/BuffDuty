@@ -32,7 +32,7 @@ It also supports command line arguments in the following format:
   
 
 _Hint_
-The way we currently using it - is we create a custom macro with this command and put it to UI for convenience. For example:
+The way we currently using it - is we create a custom macro with this command and put it in UI for convenience. For example:
 
 `/buffduty priest custom sparksheal` - will send BuffDuty message for *priest* class in a *custom* channel named *sparksheal*  
 `/buffduty m r` - will send BuffDuty message for *mage* class in a *raid* channel  
