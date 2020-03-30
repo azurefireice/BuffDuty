@@ -22,34 +22,18 @@ local function printInfoMessage(msg)
     print(string.format(buff_duty_info_message_format, msg))
 end
 
-local function contains_value_string (table, val)
-    if not table or not val then
-        return false
-    end
-    for _, value in pairs(table) do
-        if value:lower() == val:lower() then
-            return true
+function BuffDuty:getClassPlayersMap(players_count, class, excluded)
+    local result = {}
+    local index = 0
+    for i = 1, players_count do
+        local name, player_class, group = BuffDuty:getNameClassGroup(i)
+        if (player_class == class and not BuffDuty.Utils.tableContainsValue(excluded, name)) then
+            index = index + 1
+            result[name] = { idx = index, name = name, group = group, duties = 0, groups = {} }
         end
     end
-    return false
+    return result
 end
-
--- Debug
-
---local function dump(o)
---    if type(o) == 'table' then
---        local s = '{ '
---        for k, v in pairs(o) do
---            if type(k) ~= 'number' then
---                k = '"' .. k .. '"'
---            end
---            s = s .. '[' .. k .. '] = ' .. dump(v) .. ','
---        end
---        return s .. '} '
---    else
---        return tostring(o)
---    end
---end
 
 function BuffDuty:getDutiesTable(class, excluded, order)
     local m_count = GetNumGroupMembers()
@@ -65,13 +49,8 @@ function BuffDuty:getDutiesTable(class, excluded, order)
         return {}
     end
 
-    for i = 1, m_count do
-        local name, player_class, group = BuffDuty:getNameClassGroup(i)
-        if (player_class == class and not contains_value_string(excluded, name)) then
-            class_players_count = class_players_count + 1
-            class_players_map[name] = { idx = class_players_count, name = name, group = group, duties = 0, groups = {} }
-        end
-    end
+    class_players_map = BuffDuty.getClassPlayersMap(BuffDuty, m_count, class, excluded)
+    class_players_count = BuffDuty.Utils.getTableSize(class_players_map)
 
     if (class_players_count == 0) then
         printInfoMessage(string.format(no_class_players_message, class:lower()))
@@ -120,7 +99,7 @@ function BuffDuty:getDutiesTable(class, excluded, order)
     local assign_own_group = BuffDuty.max_group - ordered_players_count -- Only assign as many as we don't have ordered players to cover
     local non_ordered_idx = ordered_players_count
     for name, player in pairs(class_players_map) do
-        if not contains_value_string(ordered_players_list, name) then
+        if not BuffDuty.Utils.tableContainsValue(ordered_players_list, name) then
             --printInfoMessage(string.format("Non-Ordered %s added at %d", name, non_ordered_idx))
             ordered_players_list[non_ordered_idx] = name
             non_ordered_idx = non_ordered_idx + 1
@@ -162,7 +141,7 @@ function BuffDuty:getDutiesTable(class, excluded, order)
     for group = 1, BuffDuty.max_group, 1 do
         if not group_assigned[group] then
             order_idx, player = next_player(order_idx, true)
-            if player then 
+            if player then
                 assign_group(player, group)
             else
                 printInfoMessage(string.format("Error assigning group %d, no available player", group))

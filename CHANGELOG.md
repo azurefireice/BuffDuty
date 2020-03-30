@@ -1,3 +1,15 @@
+## [1.4.0] - 2020-03-30 ##
+### Implemented preserving player assignments
+
+### Added ###
+  * Implemented persisting player assignments between calls.
+   If the buffing players remain the same(regardless of their order in groups),
+   group assignments would not change.
+  * Added caching of assignments for same calls.
+
+### Fixed ###
+  * Addon title was formatted incorrectly. Fixed that.
+
 ## [1.3.2] - 2020-03-16 ##
 ### Fix title for addon that prevents it from showing properly.
 

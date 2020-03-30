@@ -5,7 +5,6 @@ function BuffDuty:OnInitialize()
     self:RegisterChatCommand(CHAT_COMMAND, "Command")
 end
 
-
 local function executeLogic(input)
     local class, ch_type, channel_name, excluded, order = LibStub("AceConsole-3.0"):GetArgs(input, 5)
     class, ch_type, channel_name = BuffDuty:convertArgs(class, ch_type, channel_name)
@@ -19,7 +18,17 @@ local function executeLogic(input)
     end
     excluded = BuffDuty:convertPlayerList("e", excluded)
     order = BuffDuty:convertPlayerList("o", order)
+
+    if (BuffDuty.Cache.cacheContains(class, excluded)) then
+        local cached_duties = BuffDuty.Cache.getFromCache(class, excluded)
+        BuffDuty:printDuties(class, cached_duties, ch_type, channel_name)
+        return
+    end
+
     local duties = BuffDuty:getDutiesTable(class, excluded, order)
+
+    BuffDuty.Cache.addToCache(class, excluded, duties)
+
     BuffDuty:printDuties(class, duties, ch_type, channel_name)
 end
 
