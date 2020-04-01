@@ -3,7 +3,7 @@ local buff_duty_info_message_format = "|cffffe00a•|r|cffd0021aBuff|r|cffff9d00
 local group_too_small_message = "Current Group/Raid is too small. No sense in assigning buffs."
 local no_class_players_message = "No %ss to do buffs :("
 local single_class_player_message = "Looks like we have only 1 %s in the raid today! {rt1}%s{rt1}, dear, would you kindly provide everyone with your wonderful buffs."
-local duty_single_line_message = "{rt%d} %s {rt%d} - Group%s %s"
+local duty_single_line_message = "Group%s %s - {rt%d} %s {rt%d}"
 local title_message_content = "please support our raid with your buffs, love and care! •"
 local public_title_message = "(Buff Duty) • Dear %ss, " .. title_message_content
 local whisper_title_message = "(Buff Duty) • Dear %s, " .. title_message_content
@@ -18,7 +18,7 @@ function BuffDuty:getNameClassGroup(idx)
     return name, cls, sg
 end
 
-local function printInfoMessage(msg)
+function BuffDuty:printInfoMessage(msg)
     print(string.format(buff_duty_info_message_format, msg))
 end
 
@@ -44,16 +44,10 @@ function BuffDuty:getDutiesTable(class, excluded, order)
     local group_assigned = { [1] = false, [2] = false, [3] = false, [4] = false, [5] = false, [6] = false, [7] = false, [8] = false }
     local duty_list = {}
 
-    if (m_count < 10) then
-        printInfoMessage(group_too_small_message)
-        return {}
-    end
-
-    class_players_map = BuffDuty.getClassPlayersMap(BuffDuty, m_count, class, excluded)
+    class_players_map = BuffDuty:getClassPlayersMap(m_count, class, excluded)
     class_players_count = BuffDuty.Utils.getTableSize(class_players_map)
 
     if (class_players_count == 0) then
-        printInfoMessage(string.format(no_class_players_message, class:lower()))
         return {}
     end
 
@@ -144,7 +138,7 @@ function BuffDuty:getDutiesTable(class, excluded, order)
             if player then
                 assign_group(player, group)
             else
-                printInfoMessage(string.format("Error assigning group %d, no available player", group))
+                BuffDuty:printInfoMessage(string.format("Error assigning group %d, no available player", group))
             end
         end
     end
@@ -159,14 +153,14 @@ function BuffDuty:getDutiesTable(class, excluded, order)
         table.sort(player.groups)
         local groups = ""
         for _, v in pairs(player.groups) do
-            groups = groups .. v .. ", "
+            groups = groups .. v .. ","
         end
-        groups = groups:sub(1, -3) -- remove last ", "
+        groups = groups:sub(1, -2) -- remove last ", "
         local plural = ""
         if groups:len() > 1 then
             plural = "s"
         end
-        local duty_message = string.format(duty_single_line_message, (player.idx % 8 + 1), player.name, (player.idx % 8 + 1), plural, groups)
+        local duty_message = string.format(duty_single_line_message,  plural, groups, (player.idx % 8 + 1), player.name, (player.idx % 8 + 1))
         duty_list[player.name] = duty_message
     end
 
@@ -178,11 +172,11 @@ end
 
 function BuffDuty:printDuties(class, duties_table, channel_type, channel_name)
     if not next(duties_table) then
+        BuffDuty:printInfoMessage(string.format(no_class_players_message, class:lower()))
         return
     end
 
     if (channel_type == BuffDuty.WHISPER_CHANNEL_TYPE) then
-
         for player_name, duty_message in pairs(duties_table) do
             SendChatMessage(string.format(whisper_title_message, player_name), BuffDuty.WHISPER_CHANNEL_TYPE, nil, player_name)
             SendChatMessage(duty_message, BuffDuty.WHISPER_CHANNEL_TYPE, nil, player_name)
@@ -197,7 +191,9 @@ function BuffDuty:printDuties(class, duties_table, channel_type, channel_name)
     end
 
     SendChatMessage(string.format(public_title_message, class:lower()), channel_type, nil, channel_name)
-    for _, value in pairs(duties_table) do
+    local duty_messages = BuffDuty.Utils.getTableValues(duties_table)
+    BuffDuty.Utils.sortStringArray(duty_messages)
+    for _, value in pairs(duty_messages) do
         SendChatMessage(value, channel_type, nil, channel_name)
     end
 end

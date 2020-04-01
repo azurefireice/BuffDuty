@@ -1,26 +1,27 @@
 local Cache = {}
+Cache.duties_cache = nil
+
 BuffDuty.Cache = Cache
 
-local duties_cache = {}
-
 local function generateHash(class, excluded)
-    local current_players = BuffDuty.getClassPlayersMap(BuffDuty, GetNumGroupMembers(), class, excluded)
+    local current_players = BuffDuty:getClassPlayersMap(GetNumGroupMembers(), class, excluded)
     local player_names = BuffDuty.Utils.getTableKeys(current_players)
     BuffDuty.Utils.sortStringArray(player_names)
-    return table.concat(player_names)
+    local result = BuffDuty.max_group .. ":" .. table.concat(player_names):lower()
+    return result
 end
 
-function Cache.addToCache(class, excluded, duties)
+function Cache:addToCache(class, excluded, duties)
     local hash = generateHash(class, excluded)
-    duties_cache[hash] = duties
+    self.duties_cache[hash] = duties
 end
 
-function Cache.cacheContains(class, excluded)
+function Cache:cacheContains(class, excluded)
     local hash = generateHash(class, excluded)
-    return duties_cache[hash] ~= nil
+    return self.duties_cache[hash] ~= nil
 end
 
-function Cache.getFromCache(class, excluded)
+function Cache:getFromCache(class, excluded)
     local hash = generateHash(class, excluded)
-    return duties_cache[hash]
+    return self.duties_cache[hash]
 end

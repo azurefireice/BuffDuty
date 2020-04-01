@@ -3,13 +3,14 @@ package-as: BuffDuty
 enable-nolib-creation: no
 
 externals:
-  libs/AceAddon-3.0: https://repos.wowace.com/wow/ace3/trunk/AceAddon-3.0
-  libs/AceConsole-3.0: https://repos.wowace.com/wow/ace3/trunk/AceConsole-3.0
-  libs/LibStub: https://repos.wowace.com/wow/libstub/trunk
+  libs/AceAddon-3.0:    https://repos.wowace.com/wow/ace3/trunk/AceAddon-3.0
+  libs/AceConsole-3.0:  https://repos.wowace.com/wow/ace3/trunk/AceConsole-3.0
+  libs/AceDB-3.0:       https://repos.wowace.com/wow/ace3/trunk/AceDB-3.0
+  libs/LibStub:         https://repos.wowace.com/wow/libstub/trunk
+
 
 ignore: # Files and directories beginning with a dot (such as .git) are automatically ignored, as is the pgkmeta file itself.
     - docs
-    - Scripts
     - Readme.md
     - tests.lua
 

@@ -21,16 +21,24 @@ function Utils.getTableSize(table)
     return count
 end
 
-function Utils.getTableKeys(tab)
+function Utils.getTableKeys(table)
     local key_set = {}
-    for k, v in pairs(tab) do
+    for k, v in pairs(table) do
         key_set[#key_set + 1] = k
+    end
+    return key_set
+end
+
+function Utils.getTableValues(table)
+    local key_set = {}
+    for k, v in pairs(table) do
+        key_set[#key_set + 1] = v
     end
     return key_set
 end
 
 function Utils.sortStringArray(string_array)
     table.sort(string_array, function(a, b)
-        return a:upper() < b:upper()
+        return a:lower() < b:lower()
     end)
 end

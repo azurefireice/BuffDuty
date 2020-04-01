@@ -1,4 +1,4 @@
-## [1.4.0] - 2020-03-30 ##
+## [1.4.0] - 2020-04-01 ##
 ### Implemented preserving player assignments
 
 ### Added ###
@@ -6,9 +6,10 @@
    If the buffing players remain the same(regardless of their order in groups),
    group assignments would not change.
   * Added caching of assignments for same calls.
-
-### Fixed ###
-  * Addon title was formatted incorrectly. Fixed that.
+  
+### Changed ###
+  * Changed the BuffDuty message output format. It is now `Group x - {symbol}PlayerName{symbol}`.
+  * Updated Readme to reflect the latest changes of addon logic.
 
 ## [1.3.2] - 2020-03-16 ##
 ### Fix title for addon that prevents it from showing properly.
