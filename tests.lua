@@ -7,7 +7,6 @@ local mock_players_num
 local CLASS_TO_TEST = "DRUID"
 local CLASS_TO_TEST_REF = CLASS_TO_TEST:lower()
 
-
 local mock_getNameClassGroup = function(self, idx)
     local num_groups = mock_party_size / 5
     local group = idx % num_groups + 1
@@ -24,9 +23,15 @@ function GetNumGroupMembers()
     return mock_party_size
 end
 
-local test_command = "buffduty-test"
+local test_logic_command = "buffduty-test-logic"
+local test_cache_command = "buffduty-test-cache"
+local test_cache_command_reload = "buffduty-test-cache-after-reload"
 function BuffDuty:OnInitialize()
-    self:RegisterChatCommand(test_command, "TestCommand")
+    print("Tests started")
+    self:RegisterChatCommand(test_logic_command, "TestLogicCommand")
+    self:RegisterChatCommand(test_cache_command, "TestCacheCommand")
+    self:RegisterChatCommand(test_cache_command_reload, "TestCacheAfterReloadCommand")
+    BuffDuty:init()
 end
 
 --function dump(o)
@@ -45,9 +50,9 @@ end
 --end
 
 
----------------
--- RUN TESTS --
----------------
+---------------------
+-- RUN LOGIC TESTS --
+---------------------
 
 local function test()
     BuffDuty["getNameClassGroup"] = mock_getNameClassGroup
@@ -65,7 +70,6 @@ local function test()
     mock_party_size = 10
     mock_players_num = 1
     duties = BuffDuty:getDutiesTable(CLASS_TO_TEST)
-    print("Duties : " .. dump(duties))
     key, value = next(duties)
     assert(key == CLASS_TO_TEST_REF .. "1", "Duties are empty!")
     key, value = next(duties, key)
@@ -123,12 +127,70 @@ local function test()
     ---------------
 end
 
-
-function BuffDuty:TestCommand(input)
+function BuffDuty:TestLogicCommand()
     local status, err = pcall(test)
-    if(status) then
-        print("All tests successful!")
+    if (status) then
+        print("All logic tests successful!")
     else
-        print("Error while running BuffDuty tests: \n"..err)
+        print("Error while running BuffDuty logic tests: \n" .. err)
+    end
+end
+
+---------------------
+-- RUN CACHE TESTS --
+---------------------
+
+local function test_cache()
+    mock_party_size = 40
+    mock_players_num = 8
+    BuffDuty["getNameClassGroup"] = mock_getNameClassGroup
+    local mock_value = nil
+    local actual = nil
+    ---------------
+    mock_value = "mock"
+    BuffDuty.Cache:addToCache(CLASS_TO_TEST, {}, mock_value)
+    actual = BuffDuty.Cache:cacheContains(CLASS_TO_TEST, {})
+    assert(actual, "Cache should contain key after it was added.")
+    ---------------
+    actual = BuffDuty.Cache:getFromCache(CLASS_TO_TEST, {})
+    assert(actual == mock_value, "Cache value should be the same as when it was added")
+    ---------------
+    actual = BuffDuty.Cache:getFromCache(CLASS_TO_TEST, {CLASS_TO_TEST_REF.."1"})
+    assert(not actual, "This value was not cached")
+end
+
+function BuffDuty:TestCacheCommand()
+    local status, err = pcall(test_cache)
+    if (status) then
+        print("All cache tests successful!")
+    else
+        print("Error while running BuffDuty cache tests: \n" .. err)
+    end
+end
+
+---------------------------------------
+-- RUN CACHE TESTS AFTER UI RELOADED --
+---------------------------------------
+
+local function test_cache_after_reload()
+    mock_party_size = 40
+    mock_players_num = 8
+    BuffDuty["getNameClassGroup"] = mock_getNameClassGroup
+    local mock_value = nil
+    local actual = nil
+    ---------------
+    mock_value = "mock"
+    actual = BuffDuty.Cache:getFromCache(CLASS_TO_TEST, {})
+    assert(actual == mock_value, "Cache should not have changed between UI reload")
+    --clear cache
+    BuffDuty.Cache:addToCache(CLASS_TO_TEST, {}, {})
+end
+
+function BuffDuty:TestCacheAfterReloadCommand()
+    local status, err = pcall(test_cache_after_reload)
+    if (status) then
+        print("All cache tests after UI reload successful!")
+    else
+        print("Error while running BuffDuty cache tests after UI reload: \n" .. err)
     end
 end
