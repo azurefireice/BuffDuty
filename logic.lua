@@ -221,8 +221,13 @@ function DutyAssign.generateDutyTable(cmd)
         return group
     end
 
-    -- Parse the list of group equations and attempt to assign player to the returned group
-    local function parse_assigned_groups(player, group_eq_list)
+    -- Parse the list of group equations and attempt to assign player to each returned group
+    local function parse_assigned_groups(player, groups_sets)
+        if not groups_sets then return end
+        
+        -- Select the apporiate group equation set
+        local group_eq_list = groups_sets[player.duties]
+        if not group_eq_list then group_eq_list = groups_sets[0] end
         if not group_eq_list then return end
         
         for _, group_eq_str in pairs(group_eq_list) do
@@ -241,7 +246,7 @@ function DutyAssign.generateDutyTable(cmd)
     for _, assign in pairs(cmd.assign) do
         if cmd.debug then DutyAssign.printDebugMessage(string.format("Pre-Assign %s", assign.name)) end
         -- All
-        if assign.name == "*" then
+        if assign.name == "[*]" then
             for _, player in pairs(player_map) do
                 set_player_duties(player)
                 parse_assigned_groups(player, assign.groups)

@@ -1,7 +1,7 @@
-local function string_split(input, seperator, value_func)
+local function string_split(input, seperator)
     local list = {}
     for value in string.gmatch(input, "([^"..seperator.."]+)") do -- Match all characters between seperators
-        table.insert(list, value_func and value_func(value) or value) -- If given, run value_func on each value
+        table.insert(list, value)
     end
     return list
 end
@@ -11,6 +11,13 @@ local function string_trim(value, start_patten, end_patten)
     end_patten = end_patten or "%s*"
     value = string.gsub(value, "^"..start_patten.."(.-)"..end_patten.."$", "%1")
     return value
+end
+
+local function string_len(value)
+    if not value or not (type(value) == "string") then
+        return -1
+    end
+    return #value
 end
 
 local function expandClassArg(input)
@@ -48,23 +55,36 @@ local function expandChannelTypeArg(input)
     return input
 end
 
-local function parsePreassign(arg)
+local function parseAssign(arg)
     local input = string.match(arg, "%b{}") -- Match everything between { and } inclusive
     if not input then return nil end
     input = string_trim(input, "{", "}")
 
-    local list = string_split(input, ";", string_trim)
+    local list = string_split(input, ";")
     
     -- Extract player names and check for pre-assinged groups
-    local preassign = {}
+    local assign = {}
     for i = 1, #list do
-        local item = string_split(list[i], "=", string_trim)
-        preassign[i] = {name = item[1], groups = nil}
-        if item[2] then
-            preassign[i].groups = string_split(item[2], ",", string_trim)
+        local name_group = string_split(list[i], "=")
+        assign[i] = {name = name_group[1], groups = nil}
+        -- Parse groups
+        local group_str = name_group[2]
+        if group_str and #group_str > 0 then
+            assign[i].groups = {}
+            -- Parse group sets
+            local group_sets = string_split(group_str, "%[%]$")
+            for k = 1, #group_sets do
+                local idx_set = string_split(group_sets[k], "|")
+                if #idx_set > 1 then
+                    local n = tonumber(idx_set[1])
+                    if n then assign[i].groups[n] = string_split(idx_set[2], ",") end
+                else
+                    assign[i].groups[0] = string_split(idx_set[1], ",")
+                end
+            end
         end
     end
-    return preassign
+    return assign
 end
 
 local function parseList(arg)
@@ -72,7 +92,7 @@ local function parseList(arg)
     if not input then return nil end
     input = string_trim(input, "{", "}")
 
-    return string_split(input, ",", string_trim)
+    return string_split(input, ",")
 end
 
 DutyAssign.Console = {}
@@ -101,7 +121,7 @@ function DutyAssign.Console.parseArgs(cmd, ...)
             return false
         end
 
-        local channels = string_split(arg[2], ",", string_trim)
+        local channels = string_split(arg[2], ",")
         if #channels == 0 then
             DutyAssign.printErrorMessage(string.format("Bad channels format: %s", arg[2]))
             return false
@@ -137,7 +157,7 @@ function DutyAssign.Console.parseArgs(cmd, ...)
     while arg_valid() do
         local tag = string.match(arg[idx], "^[%a%-]+") -- Match starting letters including '-'
         if tag == "a" then
-            cmd.assign = parsePreassign(arg[idx])
+            cmd.assign = parseAssign(arg[idx])
         elseif tag == "e" then
             cmd.excluded = parseList(arg[idx])
         elseif tag == "-f" or tag == "-format" then
