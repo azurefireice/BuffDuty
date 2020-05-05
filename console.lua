@@ -1,3 +1,7 @@
+local Console = {}
+BuffDuty.Console = Console
+
+
 BuffDuty.SAY_CHANNEL_TYPE = "SAY"
 BuffDuty.RAID_CHANNEL_TYPE = "RAID"
 BuffDuty.CUSTOM_CHANNEL_TYPE = "CHANNEL"
@@ -97,3 +101,106 @@ function BuffDuty:convertPlayerList(identifier, input)
     end
     return result
 end
+
+function Console.parseMessageCommand(cmd, ...)
+    local arg = {...} -- Arg list
+    local idx = 1 -- Current Arg index
+
+    local function arg_valid(i)
+        i = i or idx
+        return (arg[i] and not (i == #arg)) -- Not nil, and ignore the last Arg that AceConsole appends
+    end
+    
+    -- Print Usage Help
+    if arg[1] == "?" then
+        BuffDuty.printInfoMessage("Usage: /buffduty-msg [options]")
+        BuffDuty.printInfoMessage("reset | Resets all messages to default values")
+        BuffDuty.printInfoMessage("public-title \"value\" | Sets public title message format to \"value\"")
+        BuffDuty.printInfoMessage("duty-line \"value\" | Sets duty line message format to \"value\"")
+        BuffDuty.printInfoMessage("duty-whisper \"value\" | Sets duty whisper message format to \"value\"")
+        BuffDuty.printInfoMessage("single-title \"value\" | Sets single title message format to \"value\"")
+        BuffDuty.printInfoMessage("single-whisper \"value\" | Sets single whisper message format to \"value\"")
+        return false
+    end
+    
+    -- Options
+    while arg_valid() do
+        local tag = string.match(arg[idx], "^[%a%-]+") -- Match starting letters including '-' and '?'
+        -- Reset All
+        if tag == "reset" then
+            cmd.reset_all = true
+        -- Public Title
+        elseif tag == "public-title" or tag == "-pt" then
+            idx = idx + 1 -- next arg
+            if arg_valid() then
+                local ok, error = BuffDuty.Messages.validatePublicTitle(arg[idx])
+                if ok then
+                    cmd.public_title = arg[idx]
+                else
+                    BuffDuty.printErrorMessage(error)
+                    return false
+                end
+            else
+                BuffDuty.printErrorMessage("Invalid or missing "..tag.." value")
+            end
+        -- Duty Line
+        elseif tag == "duty-line" or tag == "-dl" then
+            idx = idx + 1 -- next arg
+            if arg_valid() then
+                local ok, error = BuffDuty.Messages.validateDutyLine(arg[idx])
+                if ok then
+                    cmd.duty_line = arg[idx]
+                else
+                    BuffDuty.printErrorMessage(error)
+                    return false
+                end
+            else
+                BuffDuty.printErrorMessage("Invalid or missing "..tag.." value")
+            end
+        -- Duty Whisper
+        elseif tag == "duty-whisper" or tag == "-dw" then
+            idx = idx + 1 -- next arg
+            if arg_valid() then
+                local ok, error = BuffDuty.Messages.validateDutyWhisper(arg[idx])
+                if ok then
+                    cmd.duty_whisper = arg[idx]
+                else
+                    BuffDuty.printErrorMessage(error)
+                    return false
+                end
+            else
+                BuffDuty.printErrorMessage("Invalid or missing "..tag.." value")
+            end
+        -- Single Title
+        elseif tag == "single-title" or tag == "-st" then
+            idx = idx + 1 -- next arg
+            if arg_valid() then
+                local ok, error = BuffDuty.Messages.validateSingleTitle(arg[idx])
+                if ok then
+                    cmd.single_title = arg[idx]
+                else
+                    BuffDuty.printErrorMessage(error)
+                    return false
+                end
+            else
+                BuffDuty.printErrorMessage("Invalid or missing "..tag.." value")
+            end
+        -- Single Whisper
+        elseif tag == "single-whisper" or tag == "-sw" then
+            idx = idx + 1 -- next arg
+            if arg_valid() then
+                local ok, error = BuffDuty.Messages.validateSingleWhisper(arg[idx])
+                if ok then
+                    cmd.single_whisper = arg[idx]
+                else
+                    BuffDuty.printErrorMessage(error)
+                    return false
+                end
+            else
+                BuffDuty.printErrorMessage("Invalid or missing "..tag.." value")
+            end
+        end
+        idx = idx + 1
+    end
+end
+
