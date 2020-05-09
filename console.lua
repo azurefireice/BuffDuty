@@ -202,5 +202,6 @@ function Console.parseMessageCommand(cmd, ...)
         end
         idx = idx + 1
     end
+    return true
 end
 
