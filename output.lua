@@ -23,7 +23,7 @@ local function macroReplace(input, macro_table)
     return input
 end
 
-function BuffDuty.PrintDuties(cmd, channel_type, duty_table)
+function BuffDuty.printDuties(cmd, channel_type, duty_table)
     if not duty_table then return end
 
     -- Local aliases

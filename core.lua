@@ -31,7 +31,7 @@ end
 local function executeLogic(input)
     -- Checks whether makes sense to assign people
     if (GetNumGroupMembers() < 10) then
-        BuffDuty:printInfoMessage("Current Group/Raid is too small. No sense in assigning buffs.")
+        BuffDuty.printInfoMessage("Current Group/Raid is too small. No sense in assigning buffs.")
         return
     end
 

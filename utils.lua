@@ -42,3 +42,10 @@ function Utils.sortStringArray(string_array)
         return a:lower() < b:lower()
     end)
 end
+
+function Utils.stringTitleCase(input)
+    local function tchelper(first, rest)
+        return first:upper()..rest:lower()
+    end
+    return string.gsub(input, "(%a)([%w_']*)", tchelper)
+end
