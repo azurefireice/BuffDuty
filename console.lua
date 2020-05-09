@@ -112,7 +112,7 @@ function Console.parseMessageCommand(cmd, ...)
     end
     
     -- Print Usage Help
-    if arg[1] == "?" then
+    if arg[1] == "?" or arg[1] == "help" then
         BuffDuty.printInfoMessage("Usage: /buffduty-msg [options]")
         BuffDuty.printInfoMessage("reset | Resets all messages to default values")
         BuffDuty.printInfoMessage("public-title \"value\" | Sets public title message format to \"value\"")
