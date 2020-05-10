@@ -157,11 +157,6 @@ function BuffDuty:getDutiesTable(class, excluded, order)
         groups = groups:sub(1, -2) -- remove last ", "
         player_info["groups"] = groups
         player_info["s"] = (groups:len() > 1) and "s" or ""
-        --local plural = ""
-        --if groups:len() > 1 then
-            --plural = "s"
-        --end
-        --local duty_message = string.format(duty_single_line_message,  plural, groups, (player.idx % 8 + 1), player.name, (player.idx % 8 + 1))
         duty_list[player.name] = player_info
     end
 
