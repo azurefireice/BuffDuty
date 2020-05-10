@@ -20,7 +20,7 @@ function Messages:Initialise()
     self.single_whisper = defaultSingleWhisper
 end
 
--- Validation functions return true = OK / false = Error and an error string
+-- Validation functions return true = OK | false = Error and an error message
 local function validatePublicTitle(public_title)
     if public_title == setToDefault then
         return true
@@ -34,7 +34,7 @@ local function validateDutyLine(duty_line)
         return true
     end
     if not (string.find(duty_line, "$groups", 1, true) and string.find(duty_line, "$name", 1, true)) then
-        return false, "Duty Line format must contain: $groups and $name"
+        error("Duty Line format must contain: $groups and $name", 2)
     end
     return true
 end
@@ -45,7 +45,7 @@ local function validateDutyWhisper(duty_whisper)
         return true
     end
     if not (string.find(duty_whisper, "$groups", 1, true)) then
-        return false, "Duty Whisper format must contain: $groups"
+        error("Duty Whisper format must contain: $groups", 2)
     end
     return true
 end
@@ -56,7 +56,7 @@ local function validateSingleTitle(single_title)
         return true
     end
     if not (string.find(single_title, "$name", 1, true)) then
-        return false, "Single Title format must contain: $name"
+        error("Single Title format must contain: $name", 2)
     end
     return true
 end
