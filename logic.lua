@@ -1,12 +1,4 @@
 --local MAX_GROUPS = 8
---local buff_duty_info_message_format = "|cffffe00a•|r|cffd0021aBuff|r|cffff9d00Duty|r|cffffe00a•|r |cffffff00%s|r"
---local group_too_small_message = "Current Group/Raid is too small. No sense in assigning buffs."
---local no_class_players_message = "No %ss to do buffs :("
---local single_class_player_message = "Looks like we have only 1 %s in the raid today! {rt1}%s{rt1}, dear, would you kindly provide everyone with your wonderful buffs."
---local duty_single_line_message = "Group%s %s - {rt%d} %s {rt%d}"
---local title_message_content = "please support our raid with your buffs, love and care! •"
---local public_title_message = "(Buff Duty) • Dear %ss, " .. title_message_content
---local whisper_title_message = "(Buff Duty) • Dear %s, " .. title_message_content
 
 BuffDuty.max_group = 1
 
