@@ -9,9 +9,7 @@ local defaults = {
 }
 
 function BuffDuty:OnInitialize()
-    self:init()
-
-    BuffDuty.Messages:Initialise()
+    self:init()   
 end
 
 function BuffDuty:init()
@@ -22,9 +20,8 @@ function BuffDuty:init()
     self.db = LibStub("AceDB-3.0"):New("BuffDutyDB", defaults)
     BuffDuty.Cache.duties_cache = self.db.factionrealm.duties_cache
     BuffDuty.Messages.custom_messages = self.db.factionrealm.custom_messages
-end
 
-function BuffDuty:OnEnable()
+    BuffDuty.Messages:Initialise()
     BuffDuty.Messages:Load()
 end
 
