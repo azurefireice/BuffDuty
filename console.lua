@@ -102,17 +102,62 @@ function BuffDuty:convertPlayerList(identifier, input)
     return result
 end
 
-function Console.parseMessageCommand(cmd, ...)
-    local arg = {...} -- Arg list
-    local idx = 1 -- Current Arg index
+-- Validate the argurment as not nil and not the final value that AceConsole appends
+local function argValid(arg, idx)
+    return (arg[idx] and not (idx == #arg)) 
+end
 
-    local function arg_valid(i)
-        i = i or idx
-        return (arg[i] and not (i == #arg)) -- Not nil, and ignore the last Arg that AceConsole appends
+-- Executes optional arguments
+-- Optional arguments are indexed by tag and have the form:
+-- option.has_value = true if the next argument is the value
+-- option.validate = function(value) return ok, error_msg
+-- option.onError = function(error) return isFatal
+-- option.execute = function(cmd, value)
+local function executeOptionalArgs(cmd, arg, idx, option_table)
+    while argValid(arg, idx) do
+        local tag = string.match(arg[idx], "^[%a%-]+") -- Match starting letters including '-'
+        local option = option_table[tag]
+        -- Check that the option is valid
+        if option then
+            -- Check if the option has a following value
+            if option.has_value then
+                idx = idx + 1
+                if not argValid(arg, idx) then
+                    BuffDuty.printErrorMessage("Invalid or missing "..tag.." value")
+                    return false
+                end
+            end
+            -- Get the value
+            local value = arg[idx]
+            -- Validate the value
+            local status, error = true, nil
+            if option.validate then 
+                status, error = pcall(option.validate, value)
+            end
+            -- Execute the option
+            if status then 
+                option.execute(cmd, value)
+            else -- Handle validation errors
+                if option.onError then
+                    if option.onError(error) then
+                        return false
+                    end
+                else        
+                    BuffDuty.printErrorMessage(error)
+                end
+            end
+        end
+        -- Next
+        idx = idx + 1
     end
+    return true
+end
+
+function Console.parseMessageCommand(cmd, ...)
+    local arg = {...} -- Argument list
     
     -- Print Usage Help
-    if arg[1] == "?" or arg[1] == "help" then
+    if arg[1] == "?" or arg[1] == "help" or arg[1] == "-h" then
         BuffDuty.printInfoMessage("Usage: /buffduty-msg [options]")
         BuffDuty.printInfoMessage("reset | Resets all messages to default values")
         BuffDuty.printInfoMessage("public-title \"value\" | Sets public title message format to \"value\"")
@@ -122,86 +167,42 @@ function Console.parseMessageCommand(cmd, ...)
         BuffDuty.printInfoMessage("single-whisper \"value\" | Sets single whisper message format to \"value\"")
         return false
     end
-    
-    -- Options
-    while arg_valid() do
-        local tag = string.match(arg[idx], "^[%a%-]+") -- Match starting letters including '-' and '?'
-        -- Reset All
-        if tag == "reset" then
-            cmd.reset_all = true
-        -- Public Title
-        elseif tag == "public-title" or tag == "-pt" then
-            idx = idx + 1 -- next arg
-            if arg_valid() then
-                local ok, error = BuffDuty.Messages.validatePublicTitle(arg[idx])
-                if ok then
-                    cmd.public_title = arg[idx]
-                else
-                    BuffDuty.printErrorMessage(error)
-                    return false
-                end
-            else
-                BuffDuty.printErrorMessage("Invalid or missing "..tag.." value")
-            end
-        -- Duty Line
-        elseif tag == "duty-line" or tag == "-dl" then
-            idx = idx + 1 -- next arg
-            if arg_valid() then
-                local ok, error = BuffDuty.Messages.validateDutyLine(arg[idx])
-                if ok then
-                    cmd.duty_line = arg[idx]
-                else
-                    BuffDuty.printErrorMessage(error)
-                    return false
-                end
-            else
-                BuffDuty.printErrorMessage("Invalid or missing "..tag.." value")
-            end
-        -- Duty Whisper
-        elseif tag == "duty-whisper" or tag == "-dw" then
-            idx = idx + 1 -- next arg
-            if arg_valid() then
-                local ok, error = BuffDuty.Messages.validateDutyWhisper(arg[idx])
-                if ok then
-                    cmd.duty_whisper = arg[idx]
-                else
-                    BuffDuty.printErrorMessage(error)
-                    return false
-                end
-            else
-                BuffDuty.printErrorMessage("Invalid or missing "..tag.." value")
-            end
-        -- Single Title
-        elseif tag == "single-title" or tag == "-st" then
-            idx = idx + 1 -- next arg
-            if arg_valid() then
-                local ok, error = BuffDuty.Messages.validateSingleTitle(arg[idx])
-                if ok then
-                    cmd.single_title = arg[idx]
-                else
-                    BuffDuty.printErrorMessage(error)
-                    return false
-                end
-            else
-                BuffDuty.printErrorMessage("Invalid or missing "..tag.." value")
-            end
-        -- Single Whisper
-        elseif tag == "single-whisper" or tag == "-sw" then
-            idx = idx + 1 -- next arg
-            if arg_valid() then
-                local ok, error = BuffDuty.Messages.validateSingleWhisper(arg[idx])
-                if ok then
-                    cmd.single_whisper = arg[idx]
-                else
-                    BuffDuty.printErrorMessage(error)
-                    return false
-                end
-            else
-                BuffDuty.printErrorMessage("Invalid or missing "..tag.." value")
-            end
-        end
-        idx = idx + 1
-    end
-    return true
-end
 
+    local option_table = {}
+
+    local reset = {}
+    reset.execute = function(cmd, value) cmd.reset_all = true end
+    option_table["reset"] = reset
+    
+    local public_title = {has_value = true}
+    public_title.validate = BuffDuty.Messages.validatePublicTitle
+    public_title.execute = function(cmd, value) cmd.public_title = value end
+    option_table["public-title"] = public_title
+    option_table["-pt"] = public_title
+
+    local duty_line = {has_value = true}
+    duty_line.validate = BuffDuty.Messages.validateDutyLine
+    duty_line.execute = function(cmd, value) cmd.duty_line = value end
+    option_table["duty-line"] = duty_line
+    option_table["-dl"] = duty_line
+
+    local duty_whisper = {has_value = true}
+    duty_whisper.validate = BuffDuty.Messages.validateDutyWhisper
+    duty_whisper.execute = function(cmd, value) cmd.duty_whisper = value end
+    option_table["duty-whisper"] = duty_whisper
+    option_table["-dw"] = duty_whisper
+
+    local single_title = {has_value = true}
+    single_title.validate = BuffDuty.Messages.validateSingleTitle
+    single_title.execute = function(cmd, value) cmd.single_title = value end
+    option_table["single-title"] = single_title
+    option_table["-st"] = single_title
+
+    local single_whisper = {has_value = true}
+    single_whisper.validate = BuffDuty.Messages.validateSingleWhisper
+    single_whisper.execute = function(cmd, value) cmd.single_whisper = value end
+    option_table["single-whisper"] = single_whisper
+    option_table["-sw"] = single_whisper
+
+    return executeOptionalArgs(cmd, arg, 1, option_table)
+end
