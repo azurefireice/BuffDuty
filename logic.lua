@@ -10,9 +10,6 @@ function BuffDuty:getNameClassGroup(idx)
     return name, cls, sg
 end
 
---function BuffDuty:printInfoMessage(msg)
-    --print(string.format(buff_duty_info_message_format, msg))
---end
 
 function BuffDuty:getClassPlayersMap(players_count, class, excluded)
     local result = {}
