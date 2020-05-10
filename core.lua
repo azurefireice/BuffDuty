@@ -9,7 +9,7 @@ local defaults = {
 }
 
 function BuffDuty:OnInitialize()
-    self:init()   
+    self:init()
 end
 
 function BuffDuty:init()
