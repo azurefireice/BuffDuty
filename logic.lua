@@ -181,31 +181,3 @@ function BuffDuty:getDutiesTable(class, excluded, order)
     end
     return duty_list
 end
-
---function BuffDuty:printDuties(class, duties_table, channel_type, channel_name)
-    --if not next(duties_table) then
-      --  BuffDuty.printInfoMessage(string.format(BuffDuty.Messages.message_no_class_players, class:lower()))
-        --return
-    --end
-
-    --if (channel_type == BuffDuty.WHISPER_CHANNEL_TYPE) then
-      --  for player_name, duty_message in pairs(duties_table) do
-        --    SendChatMessage(string.format(BuffDuty.Messages.duty_whisper, player_name), BuffDuty.WHISPER_CHANNEL_TYPE, nil, player_name)
-            --SendChatMessage(duty_message, BuffDuty.WHISPER_CHANNEL_TYPE, nil, player_name)
-        --end
-        --return
-    --end
-
-    --next_idx, _ = next(duties_table) -- next == nil if duties_table has 1 element.
-    --if (next_idx == nil) then
-      --  SendChatMessage(duties_table[1], channel_type, nil, channel_name)
-        --return
-    --end
-
-    --SendChatMessage(string.format(public_title_message, class:lower()), channel_type, nil, channel_name)
-    --local duty_messages = BuffDuty.Utils.getTableValues(duties_table)
-    --BuffDuty.Utils.sortStringArray(duty_messages)
-    --for _, value in pairs(duty_messages) do
-      --  SendChatMessage(value, channel_type, nil, channel_name)
-    --end
---end
