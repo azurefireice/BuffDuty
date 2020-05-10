@@ -10,7 +10,7 @@ end
 BuffDuty.printDebugMessage = printDebugMessage
 
 local function printErrorMessage(msg)
-    print(string.format("|cffffe00a•|r|cffd0021aBuff|r|cffff9d00Duty|r|cffffe00a•|r |cffffff00%s|r |cffff5555!ERROR! %s|r", msg))
+    print(string.format("|cffffe00a•|r|cffd0021aBuff|r|cffff9d00Duty|r|cffffe00a•|r |cffff5555!ERROR! %s|r", msg))
 end
 BuffDuty.printErrorMessage = printErrorMessage
 
