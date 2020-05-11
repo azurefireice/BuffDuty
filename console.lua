@@ -156,23 +156,32 @@ end
 function Console.parseMessageCommand(cmd, ...)
     local arg = {...} -- Argument list
     
+    -- Local aliases
+    local utils = BuffDuty.Utils
+
     -- Print Usage Help
     if arg[1] == "?" or arg[1] == "help" or arg[1] == "-h" then
         BuffDuty.printInfoMessage("Usage: /buffduty-msg [options]")
-        BuffDuty.printInfoMessage("reset | Resets all messages to default values")
-        BuffDuty.printInfoMessage("public-title \"value\" | Sets public title message format to \"value\"")
-        BuffDuty.printInfoMessage("duty-line \"value\" | Sets duty line message format to \"value\"")
-        BuffDuty.printInfoMessage("duty-whisper \"value\" | Sets duty whisper message format to \"value\"")
-        BuffDuty.printInfoMessage("single-title \"value\" | Sets single title message format to \"value\"")
-        BuffDuty.printInfoMessage("single-whisper \"value\" | Sets single whisper message format to \"value\"")
+        BuffDuty.printInfoMessage("reset value1,value2 | Reset listed messages, or all, to default values")
+        BuffDuty.printInfoMessage("public-title \"value\" | Set Public Title message to \"value\"")
+        BuffDuty.printInfoMessage("duty-line \"value\" | Set Duty Line message to \"value\"")
+        BuffDuty.printInfoMessage("duty-whisper \"value\" | Set Duty Whisper message to \"value\"")
+        BuffDuty.printInfoMessage("single-title \"value\" | Set Single Title message to \"value\"")
+        BuffDuty.printInfoMessage("single-whisper \"value\" | Set Single Whisper message to \"value\"")
         return false
     end
 
     local option_table = {}
 
-    local reset = {}
-    reset.execute = function(cmd, value) cmd.reset_all = true end
+    local verbose = {}
+    verbose.execute = function(cmd, value) cmd.verbose = true end
+    option_table["verbose"] = verbose
+    option_table["-v"] = verbose
+
+    local reset = {has_value = true}
+    reset.execute = function(cmd, value) cmd.reset = utils.stringSplit(value, ",") end
     option_table["reset"] = reset
+    option_table["-r"] = reset
     
     local public_title = {has_value = true}
     public_title.validate = BuffDuty.Messages.validatePublicTitle
