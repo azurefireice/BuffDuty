@@ -179,7 +179,12 @@ function Console.parseMessageCommand(cmd, ...)
     option_table["-v"] = verbose
 
     local reset = {has_value = true}
-    reset.execute = function(cmd, value) cmd.reset = utils.stringSplit(value, ",") end
+    reset.execute = function(cmd, value) 
+        cmd.reset = {}
+        for flag in utils.stringSplit(value, ",") do
+            cmd.reset[flag] = true
+        end
+    end
     option_table["reset"] = reset
     option_table["-r"] = reset
     
