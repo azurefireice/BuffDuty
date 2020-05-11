@@ -181,7 +181,7 @@ function Console.parseMessageCommand(cmd, ...)
     local reset = {has_value = true}
     reset.execute = function(cmd, value) 
         cmd.reset = {}
-        for flag in utils.stringSplit(value, ",") do
+        for _,flag in pairs(utils.stringSplit(value, ",")) do
             cmd.reset[flag] = true
         end
     end
