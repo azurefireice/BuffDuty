@@ -163,23 +163,42 @@ function Messages:Load()
     end
 end
 
--- Resets all custom messages to default
-function Messages:ResetAll()
+-- Reset custom messages to default
+function Messages:Reset(flags, verbose)
+    local all = flags["all"]
+    verbose = verbose or (not all) -- print for single resets or forced verbose
     -- Public Title
-    self.public_title = defaultPublicTitle
-    self.custom_messages.public_title = nil
+    if all or flags["public-title"] then
+        self.public_title = defaultPublicTitle
+        self.custom_messages.public_title = nil
+        if verbose then BuffDuty.printInfoMessage(string.format("Public Title reset to: %s", self.public_title)) end
+    end
     -- Duty Line
-    self.duty_line = defaultDutyLine
-    self.custom_messages.duty_line = nil
+    if all or flags["duty-line"] then
+        self.duty_line = defaultDutyLine
+        self.custom_messages.duty_line = nil
+        if verbose then BuffDuty.printInfoMessage(string.format("Duty Line reset to: %s", self.duty_line)) end
+    end
     -- Duty Whisper
-    self.duty_whisper = defaultDutyWhisper
-    self.custom_messages.duty_whisper = nil
+    if all or flags["duty-whisper"] then
+        self.duty_whisper = defaultDutyWhisper
+        self.custom_messages.duty_whisper = nil
+        if verbose then BuffDuty.printInfoMessage(string.format("Duty Whisper reset to: %s", self.duty_whisper)) end
+    end
     -- Single Title
-    self.single_title = defaultSingleTitle
-    self.custom_messages.single_title = nil
+    if all or flags["single-title"] then
+        self.single_title = defaultSingleTitle
+        self.custom_messages.single_title = nil
+        if verbose then BuffDuty.printInfoMessage(string.format("Single Title reset to: %s", self.single_title)) end
+    end
     -- Single Whisper
-    self.single_whisper = defaultSingleWhisper
-    self.custom_messages.single_whisper = nil
+    if all or flags["single-whisper"] then
+        self.single_whisper = defaultSingleWhisper
+        self.custom_messages.single_whisper = nil
+        if verbose then BuffDuty.printInfoMessage(string.format("Single Whisper reset to: %s", self.single_whisper)) end
+    end
     
-    BuffDuty.printInfoMessage(string.format("All message formats reset to default"))
+    if all and (not verbose) then
+        BuffDuty.printInfoMessage("All messages reset to default")
+    end
 end

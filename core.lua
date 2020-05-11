@@ -76,13 +76,15 @@ local function executeMessage(input)
         duty_whisper = nil,
         single_title = nil,
         single_whisper = nil,
+        -- Reset flag list
+        reset = nil,
         -- Flags
-        reset_all = false
+        verbose = false
     }
 
     if(BuffDuty.Console.parseMessageCommand(cmd, LibStub("AceConsole-3.0"):GetArgs(input, 12))) then
-        if cmd.reset_all then
-            BuffDuty.Messages:ResetAll()
+        if cmd.reset then
+            BuffDuty.Messages:Reset(cmd.reset, cmd.verbose)
         end
         BuffDuty.Messages:Save(cmd)
     end
