@@ -43,6 +43,37 @@ The way we currently using it - is we create a custom macro with this command an
 ![Example1](/docs/example1.png "Example for custom channel")  
 ![Example2](/docs/example2.png "Example usage for say channel")
 
+Message Customisation (verion 1.5 and above)
+----------------------------------------
+Message customisation is now available via the `/buffduty-msg` command in the following format:
+
+```/buffduty-msg [message type] "[custom message]"```
+
+* message type (`case insensitive`) - Specifies the message type:
+    * "public-title" or "-pt" - The title message displayed in a public or custom channel.
+    * "duty-line" or "-dl" - The duty line format displayed in a public or custom channel. Requires `$name` and `$groups`.
+    * "duty-whisper" or "-dw" - The whisper message sent to each player in the duty list. Requires `$groups`.
+    * "single-message" or "-sm" - The message displayed in a public or custom channel when only one buffing player is present. Requires `$name`.
+    * "single-whisper" or "-sw" - The whisper message sent when only one buffing player is present.
+* custom message - Specifies the custom message format, which must be enclosed in `" "` or use `_` (underscore) in place of spaces. *For example:* `/buffduty-msg -pt "Hello friends, please buff the following groups:"` or `/buffduty -dl $name_-_Group$s_$groups`
+
+### Macro $values
+Custom message formats can contain special macro values starting with a `$` symbol. Each macro $value is then dynamically replaced by a generated value when printed. _For example:_ `$name` will be replaced by the assinged players name.
+
+*Available macros and the message types that support, or **require**, them are:*
+* `$class` - The specified class, e.g. Priest. _Supported by:_ public-title, single-message, single-whisper
+* `$name` - The assigned players name, e.g. Xako. _Supported by:_ **duty-line**, duty-whisper, **single-message**, single-whisper
+* `$groups` - The groups the player is assigned to, e.g. 1,2,3. _Supported by:_ **duty-line**, **duty-whisper**, single-whisper
+* `$s` - Pural modifier for the number of assigned groups, e.g. Group vs. Group**s**. _Supported by:_ duty-line, duty-whisper, single-whisper
+* `$i` - Index value between 1 and 8 useful for displaying raid target icons, e.g. {rt$i}. _Supported by:_ duty-line, duty-whisper, single-whisper
+
+### Reset
+Resetting message types to their default value can be done by specifying `reset` as the message type followed a **comma seperated** list - with no spaces - of message types to reset. *For example:* `/buffduty-msg reset public-title,single-message,duty-line` would reset the public-title, single-message and duty-line message types.
+
+The keyword `all` can also be used with `reset` to reset all message types. *For example:* `/buffduty-msg reset all`
+
+*Note:* Short names for message types are not supported by `reset`; i.e. you must use `public-title` as `-pt` is not supported.
+
 How does it work?
 -----------------
 Buff Duty performs best when it works in a raid group of ~40 people with ~8 people that represent the class that buffs/dispells. 
