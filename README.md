@@ -64,6 +64,7 @@ Custom message formats can contain special macro values starting with a `$` symb
 * `$class` - The specified class, e.g. Priest. _Supported by:_ public-title, single-message, single-whisper
 * `$name` - The assigned players name, e.g. Xako. _Supported by:_ **duty-line**, duty-whisper, **single-message**, single-whisper
 * `$groups` - The groups the player is assigned to, e.g. 1,2,3. _Supported by:_ **duty-line**, **duty-whisper**, single-whisper
+* `$s` - Pural modifier for the number of buffing players, e.g. Priest vs. Priest**s**. _Supported by:_ public-title, single-message
 * `$s` - Pural modifier for the number of assigned groups, e.g. Group vs. Group**s**. _Supported by:_ duty-line, duty-whisper, single-whisper
 * `$i` - Index value between 1 and 8 useful for displaying raid target icons, e.g. {rt$i}. _Supported by:_ duty-line, duty-whisper, single-whisper
 
