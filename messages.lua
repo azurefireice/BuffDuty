@@ -4,7 +4,7 @@ BuffDuty.Messages = Messages
 local defaultPublicTitle = "Dear $class$s, please support our raid with your buffs, love and care!"
 local defaultDutyLine = "Group$s $groups - {rt$i} $name {rt$i}"
 local defaultDutyWhisper = "Thank you $name, for supporting our raid today! Would you kindly attend to buffing group$s $groups when you are able."
-local defaultSingleTitle = "Looks like we only have one $class in the raid today. {rt1}$name{rt1}, dear, would you kindly provide everyone with your wonderful buffs!"
+local defaultSingleTitle = "Looks like we only have one $class in the raid today. {rt1} $name {rt1} dear, would you kindly provide everyone with your wonderful buffs!"
 local defaultSingleWhisper = "Dear $name, looks like you are the only $class in the raid today, would you kindly provide everyone with your wonderful buffs!"
 
 function Messages:Initialise()
