@@ -188,7 +188,7 @@ function Console.parseMessageCommand(cmd, ...)
     reset.execute = function(cmd, value) 
         cmd.reset = {}
         for _,flag in pairs(utils.stringSplit(value, ",")) do
-            cmd.reset[flag] = true
+            cmd.reset[flag:lower()] = true
         end
     end
     option_table["reset"] = reset
