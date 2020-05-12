@@ -74,7 +74,7 @@ local function executeMessage(input)
         public_title = nil,
         duty_line = nil,
         duty_whisper = nil,
-        single_title = nil,
+        single_message = nil,
         single_whisper = nil,
         -- Reset flag list
         reset = nil,

@@ -167,12 +167,12 @@ function Console.parseMessageCommand(cmd, ...)
     -- Print Usage Help
     if arg[1] == "?" or arg[1] == "help" or arg[1] == "-h" then
         BuffDuty.printInfoMessage("Usage: /buffduty-msg [options]")
-        BuffDuty.printInfoMessage("reset value1,value2 | Reset listed messages, or all, to default values")
-        BuffDuty.printInfoMessage("public-title \"value\" | Set Public Title message to \"value\"")
-        BuffDuty.printInfoMessage("duty-line \"value\" | Set Duty Line message to \"value\"")
-        BuffDuty.printInfoMessage("duty-whisper \"value\" | Set Duty Whisper message to \"value\"")
-        BuffDuty.printInfoMessage("single-title \"value\" | Set Single Title message to \"value\"")
-        BuffDuty.printInfoMessage("single-whisper \"value\" | Set Single Whisper message to \"value\"")
+        BuffDuty.printInfoMessage("reset type1,type2 | Reset listed messages types, or all, to default values")
+        BuffDuty.printInfoMessage("public-title \"custom message\" | Set Public Title to \"custom message\"")
+        BuffDuty.printInfoMessage("duty-line \"custom message\" | Set Duty Line to \"custom message\"")
+        BuffDuty.printInfoMessage("duty-whisper \"custom message\" | Set Duty Whisper to \"custom message\"")
+        BuffDuty.printInfoMessage("single-message \"custom message\" | Set Single Message to \"custom message\"")
+        BuffDuty.printInfoMessage("single-whisper \"custom message\" | Set Single Whisper to \"custom message\"")
         return false
     end
 
@@ -211,11 +211,11 @@ function Console.parseMessageCommand(cmd, ...)
     option_table["duty-whisper"] = duty_whisper
     option_table["-dw"] = duty_whisper
 
-    local single_title = {has_value = true}
-    single_title.validate = BuffDuty.Messages.validateSingleTitle
-    single_title.execute = function(cmd, value) cmd.single_title = value end
-    option_table["single-title"] = single_title
-    option_table["-st"] = single_title
+    local single_message = {has_value = true}
+    single_message.validate = BuffDuty.Messages.validateSingleMessage
+    single_message.execute = function(cmd, value) cmd.single_message = value end
+    option_table["single-message"] = single_message
+    option_table["-st"] = single_message
 
     local single_whisper = {has_value = true}
     single_whisper.validate = BuffDuty.Messages.validateSingleWhisper

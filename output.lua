@@ -62,10 +62,10 @@ function BuffDuty.printDuties(cmd, channel_type, duty_table)
                 SendChatMessage(single_whisper, BuffDuty.WHISPER_CHANNEL_TYPE, nil, player_name)
             end
         else -- Public channel
-            local single_title = string.format(messages.message_title, cmd.single_title or messages.single_title)
+            local single_message = string.format(messages.message_title, cmd.single_message or messages.single_message)
             duty_macros["name"] = player_name -- Add the player "name" to the duty info
-            single_title = macroReplace(single_title, duty_macros)
-            SendChatMessage(single_title, channel_type, nil, cmd.channel_name)
+            single_message = macroReplace(single_message, duty_macros)
+            SendChatMessage(single_message, channel_type, nil, cmd.channel_name)
         end
         return
     end

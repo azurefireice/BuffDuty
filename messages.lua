@@ -4,7 +4,7 @@ BuffDuty.Messages = Messages
 local defaultPublicTitle = "Dear $class$s, please support our raid with your buffs, love and care!"
 local defaultDutyLine = "Group$s $groups - {rt$i} $name {rt$i}"
 local defaultDutyWhisper = "Thank you $name, for supporting our raid today! Would you kindly attend to buffing group$s $groups when you are able."
-local defaultSingleTitle = "Looks like we only have one $class in the raid today. {rt1} $name {rt1} dear, would you kindly provide everyone with your wonderful buffs!"
+local defaultSingleMessage = "Looks like we only have one $class in the raid today. {rt1} $name {rt1} dear, would you kindly provide everyone with your wonderful buffs!"
 local defaultSingleWhisper = "Dear $name, looks like you are the only $class in the raid today, would you kindly provide everyone with your wonderful buffs!"
 
 function Messages:Initialise()
@@ -14,7 +14,7 @@ function Messages:Initialise()
     self.public_title = defaultPublicTitle
     self.duty_line = defaultDutyLine
     self.duty_whisper = defaultDutyWhisper
-    self.single_title = defaultSingleTitle
+    self.single_message = defaultSingleMessage
     self.single_whisper = defaultSingleWhisper
 end
 
@@ -40,13 +40,13 @@ local function validateDutyWhisper(duty_whisper)
 end
 Messages.validateDutyWhisper = validateDutyWhisper
 
-local function validateSingleTitle(single_title)
-    if not (string.find(single_title, "$name", 1, true)) then
-        error("Single Title format must contain: $name", 2)
+local function validateSingleMessage(single_message)
+    if not (string.find(single_message, "$name", 1, true)) then
+        error("Single Message format must contain: $name", 2)
     end
     return true
 end
-Messages.validateSingleTitle = validateSingleTitle
+Messages.validateSingleMessage = validateSingleMessage
 
 local function validateSingleWhisper(single_whisper)
     return true
@@ -74,11 +74,11 @@ function Messages:Save(cmd)
         self.custom_messages.duty_whisper = self.duty_whisper
         BuffDuty.printInfoMessage(string.format("Duty Whisper set to: %s", self.duty_whisper))
     end
-    -- Single Title
-    if cmd.single_title and validateSingleTitle(cmd.single_title) then
-        self.single_title = cmd.single_title
-        self.custom_messages.single_title = self.single_title
-        BuffDuty.printInfoMessage(string.format("Single Title set to: %s", self.single_title))
+    -- Single Message
+    if cmd.single_message and validateSingleMessage(cmd.single_message) then
+        self.single_message = cmd.single_message
+        self.custom_messages.single_message = self.single_message
+        BuffDuty.printInfoMessage(string.format("Single Message set to: %s", self.single_message))
     end
     -- Single Whisper
     if cmd.single_whisper and validateSingleWhisper(cmd.single_whisper) then
@@ -102,9 +102,9 @@ function Messages:Load()
     if self.custom_messages.duty_whisper then
         self.duty_whisper = self.custom_messages.duty_whisper
     end
-    -- Single Title
-    if self.custom_messages.single_title then
-        self.single_title = self.custom_messages.single_title
+    -- Single Message
+    if self.custom_messages.single_message then
+        self.single_message = self.custom_messages.single_message
     end
     -- Single Whisper
     if self.custom_messages.single_whisper then
@@ -134,11 +134,11 @@ function Messages:Reset(flags, verbose)
         self.custom_messages.duty_whisper = nil
         if verbose then BuffDuty.printInfoMessage(string.format("Duty Whisper reset to: %s", self.duty_whisper)) end
     end
-    -- Single Title
-    if all or flags["single-title"] then
-        self.single_title = defaultSingleTitle
-        self.custom_messages.single_title = nil
-        if verbose then BuffDuty.printInfoMessage(string.format("Single Title reset to: %s", self.single_title)) end
+    -- Single Message
+    if all or flags["single-message"] then
+        self.single_message = defaultSingleMessage
+        self.custom_messages.single_message = nil
+        if verbose then BuffDuty.printInfoMessage(string.format("Single Message reset to: %s", self.single_message)) end
     end
     -- Single Whisper
     if all or flags["single-whisper"] then
