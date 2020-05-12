@@ -1,6 +1,7 @@
 -- Print message functions
-local function printInfoMessage(msg)
-    print(string.format("|cffffe00a•|r|cffd0021aBuff|r|cffff9d00Duty|r|cffffe00a•|r |cffffff00%s|r", msg))
+local function printInfoMessage(msg, color)
+    color = color or "ffffff00"
+    print(string.format("|cffffe00a•|r|cffd0021aBuff|r|cffff9d00Duty|r|cffffe00a•|r |c%s%s|r", color, msg))
 end
 BuffDuty.printInfoMessage = printInfoMessage
 
@@ -51,10 +52,15 @@ function BuffDuty.printDuties(cmd, channel_type, duty_table)
     if duty_count == 1 then
         local player_name, player_macros = next(duty_table)
         if channel_type == BuffDuty.WHISPER_CHANNEL_TYPE then
-            local single_whisper = string.format(messages.message_title, cmd.single_whisper or messages.single_whisper)
+            local single_whisper = cmd.single_whisper or messages.single_whisper
             player_macros["class"] = duty_macros["class"] -- Add the "class" to the player macros
             single_whisper = macroReplace(single_whisper, player_macros)
-            SendChatMessage(single_whisper, BuffDuty.WHISPER_CHANNEL_TYPE, nil, player_name)
+            if player_name == UnitName("player") then -- Print info message instead of whispering yourself
+                printInfoMessage(single_whisper, "ffff78ea")
+            else
+                single_whisper = string.format(messages.message_title, single_whisper)
+                SendChatMessage(single_whisper, BuffDuty.WHISPER_CHANNEL_TYPE, nil, player_name)
+            end
         else -- Public channel
             local single_title = string.format(messages.message_title, cmd.single_title or messages.single_title)
             duty_macros["name"] = player_name -- Add the player "name" to the duty info
@@ -66,12 +72,13 @@ function BuffDuty.printDuties(cmd, channel_type, duty_table)
 
     -- Multiple players have been assinged buffing duty
     if channel_type == BuffDuty.WHISPER_CHANNEL_TYPE then 
-        local whisper_message = string.format(messages.message_title, cmd.duty_whisper or messages.duty_whisper)
+        local whisper_message = cmd.duty_whisper or messages.duty_whisper
         for player_name, player_macros in pairs(duty_table) do -- For each player
             local duty_whisper = macroReplace(whisper_message, player_macros)
             if player_name == UnitName("player") then -- Print info message instead of whispering yourself
-                printInfoMessage(duty_whisper)
+                printInfoMessage(duty_whisper, "ffff78ea")
             else
+                whisper_message = string.format(messages.message_title, whisper_message)
                 SendChatMessage(duty_whisper, BuffDuty.WHISPER_CHANNEL_TYPE, nil, player_name)
             end
         end
