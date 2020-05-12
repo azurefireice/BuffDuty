@@ -35,7 +35,6 @@ Messages.validateDutyLine = validateDutyLine
 local function validateDutyWhisper(duty_whisper)
     if not (string.find(duty_whisper, "$groups", 1, true)) then
         error("Duty Whisper format must contain: $groups", 2)
-        return false
     end
     return true
 end
@@ -44,7 +43,6 @@ Messages.validateDutyWhisper = validateDutyWhisper
 local function validateSingleTitle(single_title)
     if not (string.find(single_title, "$name", 1, true)) then
         error("Single Title format must contain: $name", 2)
-        return false
     end
     return true
 end
