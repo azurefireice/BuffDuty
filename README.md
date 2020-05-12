@@ -55,7 +55,7 @@ Message customisation is now available via the `/buffduty-msg` command in the fo
     * "duty-whisper" or "-dw" - The whisper message sent to each player in the duty list. Requires `$groups`.
     * "single-message" or "-sm" - The message displayed in a public or custom channel when only one buffing player is present. Requires `$name`.
     * "single-whisper" or "-sw" - The whisper message sent when only one buffing player is present.
-* custom message - Specifies the custom message format, which must be enclosed in `" "` or use `_` (underscore) in place of spaces. *For example:* `/buffduty-msg -pt "Hello friends, please buff the following groups:"` or `/buffduty -dl $name_-_Group$s_$groups`
+* custom message - Specifies the custom message format, which must be enclosed in `" "` or use `_` (underscore) in place of spaces. *For example:* `/buffduty-msg -pt "Hello friends, please buff the following groups:"` or `/buffduty-msg -dl $name_-_Group$s_$groups`
 
 ### Macro $values
 Custom message formats can contain special macro values starting with a `$` symbol. Each macro $value is then dynamically replaced by a generated value when printed. _For example:_ `$name` will be replaced by the assinged players name.
