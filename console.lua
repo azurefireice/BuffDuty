@@ -123,27 +123,32 @@ local function executeOptionalArgs(cmd, arg, idx, option_table)
             if option.has_value then
                 idx = idx + 1
                 if not argValid(arg, idx) then
-                    BuffDuty.printErrorMessage("Invalid or missing "..tag.." value")
+                    BuffDuty.printErrorMessage("Missing "..tag.." value")
                     return false
                 end
             end
             -- Get the value
             local value = arg[idx]
             -- Validate the value
-            local status, error = true, nil
+            local status, result = true, true
             if option.validate then 
-                status, error = pcall(option.validate, value)
+                status, result = pcall(option.validate, value)
             end
-            -- Execute the option
+            -- Check validation status
             if status then 
-                option.execute(cmd, value)
-            else -- Handle validation errors
+                if result then
+                    option.execute(cmd, value)
+                else
+                    BuffDuty.printErrorMessage("Invalid "..tag.." value")
+                end
+            else -- Error
                 if option.onError then
-                    if option.onError(error) then
+                    if option.onError(result) then -- isFatal?
                         return false
                     end
-                else        
-                    BuffDuty.printErrorMessage(error)
+                else
+                    BuffDuty.printErrorMessage(result)
+                    return false -- Treat errors as fatal
                 end
             end
         end
