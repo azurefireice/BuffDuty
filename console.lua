@@ -216,7 +216,7 @@ function Console.parseMessageCommand(cmd, ...)
     single_message.validate = BuffDuty.Messages.validateSingleMessage
     single_message.execute = function(cmd, value) cmd.single_message = value end
     option_table["single-message"] = single_message
-    option_table["-st"] = single_message
+    option_table["-sm"] = single_message
 
     local single_whisper = {has_value = true}
     single_whisper.validate = BuffDuty.Messages.validateSingleWhisper
