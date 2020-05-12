@@ -116,6 +116,7 @@ end
 local function executeOptionalArgs(cmd, arg, idx, option_table)
     while argValid(arg, idx) do
         local tag = string.match(arg[idx], "^[%a%-]+") -- Match starting letters including '-'
+        if tag then tag = tag:lower() end -- Make case insensitive
         local option = option_table[tag]
         -- Check that the option is valid
         if option then
