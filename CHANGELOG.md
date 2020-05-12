@@ -9,6 +9,7 @@
 
 ### Changed ###
   * Restructed duty list, message handling and output to allow for customisation
+  * Changed duty whisper message format and made it a single message
   * Updated Readme to include message customisation
 
 ## [1.4.0] - 2020-04-01 ##
