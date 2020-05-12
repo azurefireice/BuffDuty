@@ -79,10 +79,9 @@ Message customisation is available via the `/buffduty-msg` command in the follow
  of spaces. *For example:* `/buffduty-msg -pt "Hello friends, please buff the following groups:"` or `/buffduty-msg -dl $name_-_Group$s_$groups`
 
 ### Variables in messages
-Custom message formats can contain special macro values starting with a `$` symbol. Each macro $value is then dynamically
- replaced by a generated value when printed. _For example:_ `$name` will be replaced by the assigned players name.
+Custom message formats can contain special variables starting with a `$` symbol. Each $variable is then dynamically replaced by a generated value when printed. _For example:_ `$name` will be replaced by the assigned players name.
 
-*Available macros and the message types that support, or **require**, them are:*
+*Available variables and the message types that support, or **require**, them are:*
 * `$class` - The specified class, e.g. Priest. _Supported by:_ public-title, single-message, single-whisper
 * `$name` - The assigned players name, e.g. Xako. _Supported by:_ **duty-line**, duty-whisper, **single-message**, single-whisper
 * `$groups` - The groups the player is assigned to, e.g. 1,2,3. _Supported by:_ **duty-line**, **duty-whisper**, single-whisper
