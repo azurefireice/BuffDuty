@@ -1,6 +1,11 @@
 # Overview
 This mod allows automatic assignment for buff/debuff duties for mages, priests, druids in [40]raid groups. By posting a message with assignments to chat.
 
+## Pretty description
+
+CurseForge's markdown is far from ideal. If you want to experience better **Description**, refer to  
+[GitHub BuffDuty ReadMe](https://github.com/azurefireice/BuffDuty/blob/master/README.md "GitHub BuffDuty ReadMe")
+
 # How does it work?
 Buff Duty performs best when it works in a raid group of ~40 people with ~8 people that represent the class that buffs/dispells. 
 Addon gathers information about the number of said people in the raid and, based on that, posts a message that informs which player is responsible for a specific raid group.
@@ -11,13 +16,15 @@ You might be interested in that if assignments are not being updated for a long 
 hesitate to reach BuffDuty creators.
 
 Some edge cases:
+
   * If there are *less then 10 players* in raid, it posts a message that it makes no sense to do buff assignments.
   * If the raid group *does not have any buffing player* of specific class, it posts a message saying that no players are available for buffing.
   * If there is *only 1 buffing player* in a raid group, BuffDuty informs that only this player will do the buffing.
   * For cases when there are *between 2 and 7 buffing players* in a raid, groups are assigned in a consecutive fashion e.g. "Player1 - Groups 1,2,3".
   * When there are *8 and more buffing players* in a raid - groups are properly assigned to first 8 players in a fashion "Player5 - Group 5".
 
-## Usage
+
+# Usage
 Mod functionality is available through a simple command
 
 **/buffduty**
@@ -54,8 +61,8 @@ The way we currently using it - is we create a custom macro with this command an
 `/buffduty priest w e{Putris,cassi}` - will send BuffDuty message for *druid* class in private message for each druid. It will exclude players "Putris" and "John" from BuffDuty.  
 `/buffduty druid c 5 e{cuernoloco,Xako}` - will send BuffDuty message for *druid* class in a *custom* channel number *5* in player's chats. It will exclude players "Putris" and "John" from BuffDuty.
 `/buffduty druid c 5 e{cuernoloco,Xako} o{Ryuken,Dimmi,Sentry}` - will send BuffDuty message for *druid* class in a *custom* channel number *5* in player's chats. It will exclude players "Putris" and "John" from BuffDuty. It will prioritise Ryuken, Dimmi, and Sentry for additional buffing duties(like receive 2nd group to look after).  
-![Example1](/docs/example1.png "Example for custom channel")  
-![Example2](/docs/example2.png "Example usage for say channel")
+![Example1](https://github.com/azurefireice/BuffDuty/blob/master/docs/example1.png?raw=true "Example for custom channel")  
+![Example2](https://github.com/azurefireice/BuffDuty/blob/master/docs/example2.png?raw=true "Example usage for say channel")
 
 ## Message Customisation
 Message customisation is available via the `/buffduty-msg` command in the following format:
@@ -91,30 +98,11 @@ The keyword `all` can also be used with `reset` to reset all message types. *For
 
 *Note:* Short names for message types are not supported by `reset`; i.e. you must use `public-title` as `-pt` is not supported.
 
-
-
 # Background
-The idea of an add-on came up when we noticed that it takes too much effort to manually track all mages in a raid and
-assign them to a specific group when de-cursing the raid members during our MC runs. It started out as a simple macro
-that needed to be edited every time raid composition changed. After maintaining it for a couple runs it became
-apparent to automate this process as well. This is how the Buff Duty was born.
-
-# Contributor info
-## Testing
-    How to run tests?
-1. In [BuffDuty.toc](BuffDuty.toc) uncomment line `# tests.lua`
-1. Start WoW client
-1. Run the following commands(turn them into macros)
-    1. /buffduty-test-logic
-    1. /buffduty-test-cache
-    1. /reload
-    1. /buffduty-test-cache-after-reload
-1. Look for input in chat
-
-> :bulb: You may use `function dump(o)` in tests to turn tables to strings for printing them.
+The idea of an add-on came up when we noticed that it takes too much effort to manually track all mages in a raid and assign them to a specific group when de-cursing the raid members during our MC runs. It started out as a simple macro that needed to be edited every time raid composition changed. After maintaining it for a couple runs it became apparent to automate this process as well. This is how the Buff Duty was born.
 
 # TODO list
+  * Allow for customized message format output
   * Support more classes/roles
   * Message localisation
   * UI
-  

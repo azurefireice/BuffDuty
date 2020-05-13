@@ -42,3 +42,18 @@ function Utils.sortStringArray(string_array)
         return a:lower() < b:lower()
     end)
 end
+
+function Utils.stringSplit(input, seperator)
+    local list = {}
+    for value in string.gmatch(input, "([^"..seperator.."]+)") do -- Match all characters between seperators
+        table.insert(list, value)
+    end
+    return list
+end
+
+function Utils.stringTitleCase(input)
+    local function tchelper(first, rest)
+        return first:upper()..rest:lower()
+    end
+    return string.gsub(input, "(%a)([%w_']*)", tchelper)
+end

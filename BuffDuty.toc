@@ -13,5 +13,7 @@ core.lua
 logic.lua
 console.lua
 cache.lua
+messages.lua
+output.lua
 utils.lua
 # tests.lua

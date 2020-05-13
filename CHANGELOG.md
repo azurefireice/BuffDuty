@@ -1,3 +1,18 @@
+## [1.5.0] - 2020-05-12 ##
+### Implemented message customisation
+
+### Added ###
+  * Implemented message customisation for printed duty messages
+  * New `/buffduty-msg` command, and command parsing logic
+  * Persistence of custom messages at the faction-realm level
+  * Support for variables in messages to allow for dynamic generation
+
+### Changed ###
+  * Restructured duty list, message handling and output to allow for customisation
+  * Changed duty whisper message format and made it a single message
+  * The user will no longer whisper themselves, a print message is displayed to them instead
+  * Updated Readme to include message customisation
+
 ## [1.4.0] - 2020-04-01 ##
 ### Implemented preserving player assignments
 

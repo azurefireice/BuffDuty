@@ -1,12 +1,4 @@
 --local MAX_GROUPS = 8
-local buff_duty_info_message_format = "|cffffe00a•|r|cffd0021aBuff|r|cffff9d00Duty|r|cffffe00a•|r |cffffff00%s|r"
-local group_too_small_message = "Current Group/Raid is too small. No sense in assigning buffs."
-local no_class_players_message = "No %ss to do buffs :("
-local single_class_player_message = "Looks like we have only 1 %s in the raid today! {rt1}%s{rt1}, dear, would you kindly provide everyone with your wonderful buffs."
-local duty_single_line_message = "Group%s %s - {rt%d} %s {rt%d}"
-local title_message_content = "please support our raid with your buffs, love and care! •"
-local public_title_message = "(Buff Duty) • Dear %ss, " .. title_message_content
-local whisper_title_message = "(Buff Duty) • Dear %s, " .. title_message_content
 
 BuffDuty.max_group = 1
 
@@ -18,9 +10,6 @@ function BuffDuty:getNameClassGroup(idx)
     return name, cls, sg
 end
 
-function BuffDuty:printInfoMessage(msg)
-    print(string.format(buff_duty_info_message_format, msg))
-end
 
 function BuffDuty:getClassPlayersMap(players_count, class, excluded)
     local result = {}
@@ -53,7 +42,12 @@ function BuffDuty:getDutiesTable(class, excluded, order)
 
     if (class_players_count == 1) then
         local name = next(class_players_map)
-        duty_list[name] = string.format(single_class_player_message, class:lower(), name)
+        local player_info = {}
+        player_info["name"] = name
+        player_info["i"] = 1
+        player_info["s"] = BuffDuty.max_group > 1 and "s" or ""
+        player_info["groups"] = string.format("%d - %d", 1, BuffDuty.max_group)
+        duty_list[name] = player_info
         return duty_list
     end
 
@@ -144,56 +138,30 @@ function BuffDuty:getDutiesTable(class, excluded, order)
     end
 
     -- Generate duty message for each player
-    local function assignDuty(_, player)
+    local function generate_duty_list(_, player)
         -- using function to be able continue iterating when "player.groups" empty
         if not next(player.groups) then
             -- When # of players of specific class > MAX_GROUPS in Raid(e.g. 12 mages)
             return
         end
+
+        local player_info = {}
+        player_info["name"] = player.name
+        player_info["i"] = ((player.idx-1) %8) + 1 -- a number between 1 and 8 (inclusive)
+
         table.sort(player.groups)
         local groups = ""
         for _, v in pairs(player.groups) do
             groups = groups .. v .. ","
         end
         groups = groups:sub(1, -2) -- remove last ", "
-        local plural = ""
-        if groups:len() > 1 then
-            plural = "s"
-        end
-        local duty_message = string.format(duty_single_line_message,  plural, groups, (player.idx % 8 + 1), player.name, (player.idx % 8 + 1))
-        duty_list[player.name] = duty_message
+        player_info["groups"] = groups
+        player_info["s"] = (groups:len() > 1) and "s" or ""
+        duty_list[player.name] = player_info
     end
 
     for _, player in pairs(class_players_map) do
-        assignDuty(_, player)
+        generate_duty_list(_, player)
     end
     return duty_list
-end
-
-function BuffDuty:printDuties(class, duties_table, channel_type, channel_name)
-    if not next(duties_table) then
-        BuffDuty:printInfoMessage(string.format(no_class_players_message, class:lower()))
-        return
-    end
-
-    if (channel_type == BuffDuty.WHISPER_CHANNEL_TYPE) then
-        for player_name, duty_message in pairs(duties_table) do
-            SendChatMessage(string.format(whisper_title_message, player_name), BuffDuty.WHISPER_CHANNEL_TYPE, nil, player_name)
-            SendChatMessage(duty_message, BuffDuty.WHISPER_CHANNEL_TYPE, nil, player_name)
-        end
-        return
-    end
-
-    next_idx, _ = next(duties_table) -- next == nil if duties_table has 1 element.
-    if (next_idx == nil) then
-        SendChatMessage(duties_table[1], channel_type, nil, channel_name)
-        return
-    end
-
-    SendChatMessage(string.format(public_title_message, class:lower()), channel_type, nil, channel_name)
-    local duty_messages = BuffDuty.Utils.getTableValues(duties_table)
-    BuffDuty.Utils.sortStringArray(duty_messages)
-    for _, value in pairs(duty_messages) do
-        SendChatMessage(value, channel_type, nil, channel_name)
-    end
 end
