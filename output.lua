@@ -24,7 +24,7 @@ local function macroReplace(input, macro_table)
     return input
 end
 
-function BuffDuty.printDuties(cmd, channel_type, duty_table)
+function BuffDuty.printDuties(cmd, channel_type, channel_id, duty_table)
     if not duty_table then return end
 
     -- Local aliases
@@ -65,7 +65,7 @@ function BuffDuty.printDuties(cmd, channel_type, duty_table)
             local single_message = string.format(messages.message_title, cmd.single_message or messages.single_message)
             duty_macros["name"] = player_name -- Add the player "name" to the duty info
             single_message = macroReplace(single_message, duty_macros)
-            SendChatMessage(single_message, channel_type, nil, cmd.channel_name)
+            SendChatMessage(single_message, channel_type, nil, channel_id)
         end
         return
     end
@@ -85,12 +85,12 @@ function BuffDuty.printDuties(cmd, channel_type, duty_table)
     else -- Public channel
         local public_title = string.format(messages.message_title, cmd.public_title or messages.public_title)
         public_title = macroReplace(public_title, duty_macros)
-        SendChatMessage(public_title, channel_type, nil, cmd.channel_name)
+        SendChatMessage(public_title, channel_type, nil, channel_id)
         -- Duty lines
         for player_name, player_macros in pairs(duty_table) do
             local duty_line = cmd.duty_line or messages.duty_line
             duty_line = macroReplace(duty_line, player_macros)
-            SendChatMessage(duty_line, channel_type, nil, cmd.channel_name)
+            SendChatMessage(duty_line, channel_type, nil, channel_id)
         end
     end
 end

@@ -51,6 +51,13 @@ function Utils.stringSplit(input, seperator)
     return list
 end
 
+function Utils.stringTrim(value, start_patten, end_patten)
+    start_patten = start_patten or "%s*" -- Default to whitespace characters
+    end_patten = end_patten or "%s*"
+    value = string.gsub(value, "^"..start_patten.."(.-)"..end_patten.."$", "%1")
+    return value
+end
+
 function Utils.stringTitleCase(input)
     local function tchelper(first, rest)
         return first:upper()..rest:lower()
