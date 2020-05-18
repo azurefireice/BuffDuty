@@ -147,31 +147,30 @@ function defaultLogic.generateDutyMap(cmd, raid_info, class_players)
         set_player_duties(player)
     end
 
-    -- Pre-Assign own groups
-    if cmd.own_group == "priority" then
-        for idx = 1, ordered_count do -- Specified order players only
-            local player = player_map[ordered_players[idx]]
-            if raid_groups[player.group] and (player.duties > 0) then
-                assign_group(player, player.group)
+    -- Assign own groups
+    if not cmd.own_group["ignore"] then
+        -- Only assign own group if the player has a single duty
+        local single_duty = cmd.own_group["single"] 
+        -- Validate that own group can be assign
+        local function assign_own_group(player)
+            if player and raid_groups[player.group] and (player.duties > 0) then
+                if (not single_duty) or player.duties == 1 then
+                    assign_group(player, player.group)
+                end
             end
         end
-    elseif cmd.own_group == "default" then
-        local assign_own_group = group_count - ordered_count
-        for idx = ordered_count + 1, #ordered_players do -- Non-order players only
-            local player = player_map[ordered_players[idx]]
-            if (assign_own_group > 0) and (player.duties > 0) and raid_groups[player.group] then
-                assign_group(player, player.group)
-                assign_own_group = assign_own_group - 1
+         
+        if cmd.own_group["priority"] then -- Assign in ordered
+            for idx = 1, #ordered_players do 
+                assign_own_group(player_map[ordered_players[idx]])
+            end        
+        else -- Default of non-ordered players first
+            for idx = ordered_count + 1, #ordered_players do
+                assign_own_group(player_map[ordered_players[idx]])
             end
-        end
-    end
-
-    -- Post-Assign own groups to ordered players if still available, and in reverse order
-    if cmd.own_group == "default" then
-        for idx = ordered_count, 1, -1 do
-            local player = player_map[ordered_players[idx]]
-            if raid_groups[player.group] and (player.duties > 0) then
-                assign_group(player, player.group)
+            -- Ordered players in reverse order
+            for idx = ordered_count, 1, -1 do
+                assign_own_group(player_map[ordered_players[idx]])
             end
         end
     end

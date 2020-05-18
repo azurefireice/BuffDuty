@@ -37,10 +37,11 @@ local function executeDuty(input)
         class = nil,
         channel_type = nil,
         channel_id = nil,
-         -- Tables
-         excluded = {},
-         order = {},
-         assign = {},
+        -- Tables
+        excluded = {},
+        order = {},
+        assign = {},
+        own_group = {},
         -- Custom message settings, listed here for reference
         public_title = nil,
         duty_line = nil,

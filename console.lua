@@ -215,6 +215,16 @@ function Console.parseDutyCommand(cmd, ...)
     assign.execute = function(cmd, value) cmd.assign = parseAssign(value) end
     option_table["a"] = assign
 
+    local own_group = {has_value = true}
+    own_group.execute = function(cmd, value)
+        cmd.own_group = {}
+        for _,flag in pairs(utils.stringSplit(value, ",")) do
+            cmd.own_group[flag:lower()] = true
+        end
+    end
+    option_table["own-group"] = own_group
+    option_table["-own"] = own_group
+
     local cache = {has_value = true}
     cache.execute = function(cmd, value) 
         if value:lower() == "off" then cmd.cache = false end
