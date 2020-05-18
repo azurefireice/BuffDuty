@@ -1,3 +1,12 @@
+## [1.6.0] - IN PROGRESS ##
+### Restructure of logic
+
+### Added ###
+  * Localisation.lua as a step towards localisation
+
+### Changed ###
+  * Updated console parseing for /buffduty command
+
 ## [1.5.0] - 2020-05-12 ##
 ### Implemented message customisation
 
