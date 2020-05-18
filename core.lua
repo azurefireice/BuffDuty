@@ -60,7 +60,7 @@ local function executeDuty(input)
             duties = BuffDuty.Cache:getFromCache(cmd, raid_info, class_players)
         end
         if not duties then
-            duties = BuffDuty.getDutiesTable(cmd)
+            duties = BuffDuty.getDutiesTable(cmd, raid_info, class_players)
             BuffDuty.Cache:addToCache(cmd, raid_info, class_players, duties)
         end
 
