@@ -11,10 +11,11 @@ libs\AceConsole-3.0\AceConsole-3.0.xml
 libs\AceDB-3.0\AceDB-3.0.xml
 core.lua
 localisation.lua
-logic.lua
 console.lua
-cache.lua
+raidinfo.lua
 messages.lua
+logic.lua
+cache.lua
 output.lua
 utils.lua
 # tests.lua

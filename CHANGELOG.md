@@ -2,10 +2,11 @@
 ### Restructure of logic
 
 ### Added ###
-  * Localisation.lua as a step towards localisation
+  * localisation.lua as a step towards localisation
+  * raidinfo.lua to seperate raid scanning from logic
 
 ### Changed ###
-  * Updated console parseing for /buffduty command
+  * Updated console parsing for /buffduty command
 
 ## [1.5.0] - 2020-05-12 ##
 ### Implemented message customisation
