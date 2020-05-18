@@ -53,11 +53,15 @@ local function executeDuty(input)
     }
 
     if BuffDuty.Console.parseDutyCommand(cmd, LibStub("AceConsole-3.0"):GetArgs(input, 20)) then
-        if cmd.cache and (BuffDuty.Cache:cacheContains(cmd) and next(BuffDuty.Cache:getFromCache(cmd))) then
-            duties = BuffDuty.Cache:getFromCache(cmd)
-        else
-            duties = BuffDuty:getDutiesTable(cmd)
-            BuffDuty.Cache:addToCache(cmd, duties)
+        local raid_info, class_players = BuffDuty.RaidInfo.Scan(cmd.class, cmd.excluded)
+
+        local duties = nil
+        if cmd.cache then
+            duties = BuffDuty.Cache:getFromCache(cmd, raid_info, class_players)
+        end
+        if not duties then
+            duties = BuffDuty.getDutiesTable(cmd)
+            BuffDuty.Cache:addToCache(cmd, raid_info, class_players, duties)
         end
 
         BuffDuty.printDuties(cmd, cmd.channel_type, cmd.channel_id, duties)

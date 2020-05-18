@@ -1,10 +1,10 @@
 local Logic = {}
 BuffDuty.Logic = Logic
 
--- Support for multiple logic type
+-- Support for multiple logic types
 Logic.Type = {}
-local DEFAULT_LOGIC = "DEFAULT"
-Logic.Type[DEFAULT_LOGIC] = {}
+Logic.Type.DEFAULT = "DEFAULT"
+Logic.Type.ASSIGN = "ASSIGN"
 
 -- local aliases
 local utils = BuffDuty.Utils
@@ -14,7 +14,7 @@ local utils = BuffDuty.Utils
 -- list[name]["i"] = the players index truncated to between 1 and 8 (inclusive)
 -- list[name]["groups"] = a string list of assigned groups
 -- list[name]["s"] = plural modifier; "s" if the player is assigned more than 1 group
-function BuffDuty.getDutyTable(cmd, raid_info, class_players, logic_type)
+function BuffDuty.getDutiesTable(cmd, raid_info, class_players, logic_type)
     -- No players to assign :(
     if (class_players.count == 0) then
         return {} 
@@ -37,10 +37,10 @@ function BuffDuty.getDutyTable(cmd, raid_info, class_players, logic_type)
         return duty_list
     end
 
-    logic_type = logic_type or DEFAULT_LOGIC
+    logic_type = logic_type or Logic.Type.DEFAULT
     local generateDutyMap = nil
-    if Logic.Type[logic_type] then
-        generateDutyMap = Logic.Type[logic_type].generateDutyMap
+    if Logic[logic_type] then
+        generateDutyMap = Logic[logic_type].generateDutyMap
     end
     if not generateDutyMap then
         BuffDuty.printErrorMessage(string.format("Invalid Logic Type '%s'", logic_type))
@@ -100,8 +100,10 @@ local function getOrderedPlayerList(player_map, order)
 end
 Logic.getOrderedPlayerList = getOrderedPlayerList
 
--- Default Logic
-local defaultLogic = Logic.Type[DEFAULT_LOGIC]
+------------ DEFAULT LOGIC ------------
+local defaultLogic = {}
+Logic[Logic.Type.DEFAULT] = defaultLogic
+
 function defaultLogic.generateDutyMap(cmd, raid_info, class_players)
     -- Local aliases
     local group_count = raid_info.groups_count
@@ -203,12 +205,4 @@ function defaultLogic.generateDutyMap(cmd, raid_info, class_players)
     end
 
     return player_map
-end
-
--- Assing Logic
-local assignLogic = {}
-Logic.Type["ASSIGN"] = assignLogic
-
-function assignLogic.generateDutyMap(cmd, raid_info, class_players)
-    -- TODO
 end
