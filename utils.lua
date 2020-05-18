@@ -1,12 +1,17 @@
 local Utils = {}
 BuffDuty.Utils = Utils
 
-function Utils.tableContainsValue(table, val)
-    if not table or not val then
+
+function Utils.containsName(table, name, get_name_func)
+    if not table or not name then
         return false
     end
+    if not get_name_func then
+        get_name_func = function(x) return x end
+    end
+    name = name:lower()
     for _, value in pairs(table) do
-        if value:lower() == val:lower() then
+        if name == string.lower(get_name_func(value)) then
             return true
         end
     end

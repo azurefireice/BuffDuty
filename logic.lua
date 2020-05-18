@@ -16,7 +16,7 @@ function BuffDuty:getClassPlayersMap(players_count, class, excluded)
     local index = 0
     for i = 1, players_count do
         local name, player_class, group = BuffDuty:getNameClassGroup(i)
-        if (player_class == class and not BuffDuty.Utils.tableContainsValue(excluded, name)) then
+        if (player_class == class and not BuffDuty.Utils.containsName(excluded, name)) then
             index = index + 1
             result[name] = { idx = index, name = name, group = group, duties = 0, groups = {} }
         end
@@ -87,7 +87,7 @@ function BuffDuty:getDutiesTable(class, excluded, order)
     local assign_own_group = BuffDuty.max_group - ordered_players_count -- Only assign as many as we don't have ordered players to cover
     local non_ordered_idx = ordered_players_count
     for name, player in pairs(class_players_map) do
-        if not BuffDuty.Utils.tableContainsValue(ordered_players_list, name) then
+        if not BuffDuty.Utils.containsName(ordered_players_list, name) then
             --printInfoMessage(string.format("Non-Ordered %s added at %d", name, non_ordered_idx))
             ordered_players_list[non_ordered_idx] = name
             non_ordered_idx = non_ordered_idx + 1
