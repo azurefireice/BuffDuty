@@ -1,62 +1,128 @@
---local MAX_GROUPS = 8
+local Logic = {}
+BuffDuty.Logic = Logic
 
-BuffDuty.max_group = 1
+-- Support for multiple logic type
+Logic.Type = {}
+local DEFAULT_LOGIC = "DEFAULT"
+Logic.Type[DEFAULT_LOGIC] = {}
 
-function BuffDuty:getNameClassGroup(idx)
-    local name, r, sg, lvl, cls_loc, cls = GetRaidRosterInfo(idx)
-    if sg > BuffDuty.max_group then
-        BuffDuty.max_group = sg
+-- local aliases
+local utils = BuffDuty.Utils
+
+-- Generates and returns a duty list in the following format:
+-- list[name]["name"] = the players name
+-- list[name]["i"] = the players index truncated to between 1 and 8 (inclusive)
+-- list[name]["groups"] = a string list of assigned groups
+-- list[name]["s"] = plural modifier; "s" if the player is assigned more than 1 group
+function BuffDuty.getDutyTable(cmd, raid_info, class_players, logic_type)
+    -- No players to assign :(
+    if (class_players.count == 0) then
+        return {} 
     end
-    return name, cls, sg
-end
-
-
-function BuffDuty:getClassPlayersMap(players_count, class, excluded)
-    local result = {}
-    local index = 0
-    for i = 1, players_count do
-        local name, player_class, group = BuffDuty:getNameClassGroup(i)
-        if (player_class == class and not BuffDuty.Utils.containsName(excluded, name)) then
-            index = index + 1
-            result[name] = { idx = index, name = name, group = group, duties = 0, groups = {} }
+    -- One player to assign :/
+    if (class_player.count == 1) then
+        local name = next(class_players.map)
+        local duty = {}
+        duty["name"] = name
+        duty["i"] = 1
+        if raid_info.group_count == 1 then
+            duty["s"] = ""
+            duty["groups"] = string.format("%d", raid_info.group_min)
+        else
+            duty["s"] = "s"
+            duty["groups"] = string.format("%d - %d", raid_info.group_min, raid_info.group_max)
         end
-    end
-    return result
-end
-
-function BuffDuty:getDutiesTable(class, excluded, order)
-    local m_count = GetNumGroupMembers()
-    local class_players_count = 0
-    local class_players_map = {}
-    local ordered_players_count = 0
-    local ordered_players_list = {}
-    local group_assigned = { [1] = false, [2] = false, [3] = false, [4] = false, [5] = false, [6] = false, [7] = false, [8] = false }
-    local duty_list = {}
-
-    class_players_map = BuffDuty:getClassPlayersMap(m_count, class, excluded)
-    class_players_count = BuffDuty.Utils.getTableSize(class_players_map)
-
-    if (class_players_count == 0) then
-        return {}
-    end
-
-    if (class_players_count == 1) then
-        local name = next(class_players_map)
-        local player_info = {}
-        player_info["name"] = name
-        player_info["i"] = 1
-        player_info["s"] = BuffDuty.max_group > 1 and "s" or ""
-        player_info["groups"] = string.format("%d - %d", 1, BuffDuty.max_group)
-        duty_list[name] = player_info
+        local duty_list = {}
+        duty_list[name] = duty
         return duty_list
     end
 
-    -- Calculate how many groups each player will buff, and how many extra groups there are
-    local extra_duties = BuffDuty.max_group % class_players_count
-    local duties_per_player = (BuffDuty.max_group - extra_duties) / class_players_count
-    --printInfoMessage(string.format("Groups = %d; Count = %d; Duties per player = %d; Extra = %d", max_group, class_players_count, duties_per_player, extra_duties))
+    logic_type = logic_type or DEFAULT_LOGIC
+    local generateDutyMap = nil
+    if Logic.Type[logic_type] then
+        generateDutyMap = Logic.Type[logic_type].generateDutyMap
+    end
+    if not generateDutyMap then
+        BuffDuty.printErrorMessage(string.format("Invalid Logic Type '%s'", logic_type))
+        return nil
+    end
+    
+    local player_duty_map = generateDutyMap(cmd, raid_info, class_players)
+    
+    local function generate_duty(player)
+        -- Check that the player has been assigned groups, e.g. the raid may have more mages than groups to buff
+        if not player.groups or #player.groups < 1 then return end
 
+        local duty = {}
+        duty["name"] = player.name
+        duty["i"] = ((player.idx-1) % 8) + 1 -- a number between 1 and 8 (inclusive)
+
+        table.sort(player.groups)
+        local groups = ""
+        for _, v in pairs(player.groups) do
+            groups = groups .. v .. ","
+        end
+        groups = groups:sub(1, -2) -- remove last ","
+        duty["groups"] = groups
+        duty["s"] = (#player.groups > 1) and "s" or ""
+        return duty
+    end
+
+    local duty_list = {}
+    for _, player in pairs(player_duty_map) do
+        duty_list[player.name] = generate_duty(player)
+    end
+    return duty_list
+end
+
+-- Returns a list of ordered players and a count of players specified in order
+local function getOrderedPlayerList(player_map, order)
+    local ordered_players = {}
+    local ordered_count = 0
+    -- Order list first
+    if order then
+        for _, name in pairs(order) do
+            if player_map[name] then
+                ordered_count = ordered_count + 1
+                ordered_players[ordered_count] = name
+            end
+        end
+    end
+    -- Remaining players in map
+    local idx = ordered_count
+    for name, player in pairs(player_map) do
+        if not utils.containsName(ordered_players, name) then
+            idx = idx + 1
+            ordered_players[idx] = name
+        end
+    end
+    return ordered_players, ordered_count
+end
+Logic.getOrderedPlayerList = getOrderedPlayerList
+
+-- Default Logic
+local defaultLogic = Logic.Type[DEFAULT_LOGIC]
+function defaultLogic.generateDutyMap(cmd, raid_info, class_players)
+    -- Local aliases
+    local group_count = raid_info.groups_count
+    local raid_groups = raid_info.groups
+    local player_count = class_players.count
+    local player_map = class_players.map
+
+    -- Initialise player map
+    for _, player in pairs(player_map) do
+        player.duties = nil
+        player.groups = {}
+    end
+
+    -- Calculate how many groups each player will buff, and how many extra groups there are
+    local extra_duties = group_count % player_count
+    local duties_per_player = (group_count - extra_duties) / player_count
+    if cmd.debug then BuffDuty.printDebugMessage(string.format("Groups = %d; Players = %d; Duties/Player = %d; Extra = %d", group_count, player_count, duties_per_player, extra_duties)) end
+
+    -- Sets a players initial assignable duty count
     local function set_player_duties(player)
+        if player.duties then return end -- Ensure we only set duties once
         player.duties = duties_per_player
         if extra_duties > 0 then
             player.duties = player.duties + 1
@@ -64,104 +130,85 @@ function BuffDuty:getDutiesTable(class, excluded, order)
         end
     end
 
+     -- Assigns a player to a group, reducing assignable duties by 1
     local function assign_group(player, group)
+        if cmd.debug then BuffDuty.printDebugMessage(string.format("%s assigned group %d", player.name, group)) end
         table.insert(player.groups, group)
         player.duties = player.duties - 1
-        group_assigned[group] = true
+        raid_groups[group] = false
     end
 
-    -- Create ordered list of player names, starting with ordered players and setting duties
-    if order then
-        for _, name in pairs(order) do
-            local player = class_players_map[name]
-            if player then
-                --printInfoMessage(string.format("Ordered %s added at %d", name, ordered_players_count))
-                ordered_players_list[ordered_players_count] = name
-                ordered_players_count = ordered_players_count + 1
-                set_player_duties(player)
+    local ordered_players, ordered_count = getOrderedPlayerList(player_map, cmd.order)
+    -- Assign players their number of duties in order
+    for idx = 1, #ordered_players do
+        local player = player_map[ordered_players[idx]]
+        set_player_duties(player)
+    end
+
+    -- Pre-Assign own groups
+    if cmd.own_group == "priority" then
+        for idx = 1, ordered_count do -- Specified order players only
+            local player = player_map[ordered_players[idx]]
+            if raid_groups[player.group] and (player.duties > 0) then
+                assign_group(player, player.group)
             end
         end
-    end
-
-    -- Add non-ordered players to ordered players list, settings duties and assigning to their own group first (if needed)
-    local assign_own_group = BuffDuty.max_group - ordered_players_count -- Only assign as many as we don't have ordered players to cover
-    local non_ordered_idx = ordered_players_count
-    for name, player in pairs(class_players_map) do
-        if not BuffDuty.Utils.containsName(ordered_players_list, name) then
-            --printInfoMessage(string.format("Non-Ordered %s added at %d", name, non_ordered_idx))
-            ordered_players_list[non_ordered_idx] = name
-            non_ordered_idx = non_ordered_idx + 1
-            set_player_duties(player)
-            -- Assign to own group if needed
-            if (assign_own_group > 0) and (player.duties > 0) and (not group_assigned[player.group]) then
-                --printInfoMessage(string.format("Non-Ordered %s assigned own group %d", name, player.group))
+    elseif cmd.own_group == "default" then
+        local assign_own_group = group_count - ordered_count
+        for idx = ordered_count + 1, #ordered_players do -- Non-order players only
+            local player = player_map[ordered_players[idx]]
+            if (assign_own_group > 0) and (player.duties > 0) and raid_groups[player.group] then
                 assign_group(player, player.group)
                 assign_own_group = assign_own_group - 1
             end
         end
     end
 
-    -- Assign ordered players to their own group if still available, and in reverse order
-    for ordered_idx = ordered_players_count - 1, 0, -1 do
-        local player = class_players_map[ordered_players_list[ordered_idx]]
-        if not group_assigned[player.group] and player.duties > 0 then
-            --printInfoMessage(string.format("Ordered %s assigned own group %d", name, player.group))
-            assign_group(player, player.group)
+    -- Post-Assign own groups to ordered players if still available, and in reverse order
+    if cmd.own_group == "default" then
+        for idx = ordered_count, 1, -1 do
+            local player = player_map[ordered_players[idx]]
+            if raid_groups[player.group] and (player.duties > 0) then
+                assign_group(player, player.group)
+            end
         end
     end
 
+    -- Get the next player, in order, that has remaining duties
     local function next_player(idx, loop)
-        local player = class_players_map[ordered_players_list[idx]]
+        local player = player_map[ordered_players[idx]]
         -- Check if the player has remaining duties
-        while player and not (player.duties > 0) do
+        while player and (not (player.duties > 0)) do
             idx = idx + 1
-            player = class_players_map[ordered_players_list[idx]]
+            player = player_map[ordered_players[idx]]
         end
         -- End of the list
         if loop and not player then
-            return next_player(0, false) -- Guard against infinite recursion, should never need to loop more than once
+            return next_player(1, false) -- Guard against infinite recursion, should never need to loop more than once
         end
         return idx, player
     end
 
     -- Assign remaining groups to players in order
-    local order_idx = 0
-    for group = 1, BuffDuty.max_group, 1 do
-        if not group_assigned[group] then
-            order_idx, player = next_player(order_idx, true)
+    local idx = 1
+    for group = 1, group_count do
+        if raid_groups[group] then
+            idx, player = next_player(idx, true)
             if player then
                 assign_group(player, group)
             else
-                BuffDuty:printInfoMessage(string.format("Error assigning group %d, no available player", group))
+                BuffDuty:printErrorMessage(string.format("Failed to assign group %d, no available players", group))
             end
         end
     end
 
-    -- Generate duty message for each player
-    local function generate_duty_list(_, player)
-        -- using function to be able continue iterating when "player.groups" empty
-        if not next(player.groups) then
-            -- When # of players of specific class > MAX_GROUPS in Raid(e.g. 12 mages)
-            return
-        end
+    return player_map
+end
 
-        local player_info = {}
-        player_info["name"] = player.name
-        player_info["i"] = ((player.idx-1) %8) + 1 -- a number between 1 and 8 (inclusive)
+-- Assing Logic
+local assignLogic = {}
+Logic.Type["ASSIGN"] = assignLogic
 
-        table.sort(player.groups)
-        local groups = ""
-        for _, v in pairs(player.groups) do
-            groups = groups .. v .. ","
-        end
-        groups = groups:sub(1, -2) -- remove last ", "
-        player_info["groups"] = groups
-        player_info["s"] = (groups:len() > 1) and "s" or ""
-        duty_list[player.name] = player_info
-    end
-
-    for _, player in pairs(class_players_map) do
-        generate_duty_list(_, player)
-    end
-    return duty_list
+function assignLogic.generateDutyMap(cmd, raid_info, class_players)
+    -- TODO
 end
