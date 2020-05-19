@@ -50,8 +50,20 @@ end
 
 function Utils.stringSplit(input, seperator)
     local list = {}
+    local idx = 0
     for value in string.gmatch(input, "([^"..seperator.."]+)") do -- Match all characters between seperators
-        table.insert(list, value)
+        idx = idx + 1
+        list[idx] = value
+    end
+    return list
+end
+
+function Utils.stringSplitAsFlags(input, seperator)
+    local list = {}
+    for value in string.gmatch(input, "([^"..seperator.."]+)") do -- Match all characters between seperators
+        if value and #value > 1 then
+            list[value:lower()] = true
+        end
     end
     return list
 end

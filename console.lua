@@ -120,14 +120,16 @@ local function parseAssign(input)
         if group_str and #group_str > 0 then
             assign[i].groups = {}
             -- Parse group sets
-            local group_sets = utils.stringSplit(group_str, "%[%]$") -- Split by [ ] indexed sets
-            for k = 1, #group_sets do
-                local idx_set = utils.stringSplit(group_sets[k], "|") -- Seperate index from group
-                if #idx_set > 1 then -- Index and Groups
-                    local idx = tonumber(idx_set[1])
-                    if idx then assign[i].groups[idx] = utils.stringSplit(idx_set[2], ",") end
-                else -- Zero index Groups
-                    assign[i].groups[0] = utils.stringSplit(idx_set[1], ",")
+            local sets = utils.stringSplit(group_str, "%[%]$") -- Split into [ ] sets
+            for k = 1, #sets do
+                local condition_groups = utils.stringSplit(group_sets[k], "|") -- Seperate condition from groups
+                if #condition_groups > 1 then -- Condition and Groups
+                    local n = tonumber(condition_groups[1])
+                    if n then 
+                        assign[i].groups[n] = utils.stringSplit(condition_groups[2], ",") 
+                    end
+                else -- Zero indexed Groups
+                    assign[i].groups[0] = utils.stringSplit(condition_groups[1], ",")
                 end
             end
         end
@@ -140,6 +142,12 @@ function Console.parseDutyCommand(cmd, ...)
     local arg = {...} -- Argument list
     local idx = 0
     --for i = 0, #arg do print(i, arg[i]) end -- Debug
+
+    -- Print version
+    if arg[1] == "version" or arg[1] == "-v" then
+        BuffDuty.printInfoMessage(string.format("Version: %d.%d.%d", BuffDuty.VERSION.MAJOR, BuffDuty.VERSION.MINOR, BuffDuty.VERSION.PATCH))
+        return false
+    end
 
     -- Print Usage Help
     if arg[1] == "?" or arg[1] == "help" or arg[1] == "-h" then
@@ -216,12 +224,7 @@ function Console.parseDutyCommand(cmd, ...)
     option_table["a"] = assign
 
     local own_group = {has_value = true}
-    own_group.execute = function(cmd, value)
-        cmd.own_group = {}
-        for _,flag in pairs(utils.stringSplit(value, ",")) do
-            cmd.own_group[flag:lower()] = true
-        end
-    end
+    own_group.execute = function(cmd, value) cmd.own_group = stringSplitAsFlags(value, ",") end
     option_table["own-group"] = own_group
     option_table["-own"] = own_group
 
@@ -263,12 +266,7 @@ function Console.parseMessageCommand(cmd, ...)
     option_table["-v"] = verbose
 
     local reset = {has_value = true}
-    reset.execute = function(cmd, value) 
-        cmd.reset = {}
-        for _,flag in pairs(utils.stringSplit(value, ",")) do
-            cmd.reset[flag:lower()] = true
-        end
-    end
+    reset.execute = function(cmd, value) cmd.reset = utils.stringSplitAsFlags(value, ",") end
     option_table["reset"] = reset
     option_table["-r"] = reset
     

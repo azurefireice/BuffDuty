@@ -73,7 +73,7 @@ local function executeDuty(input)
             duties = BuffDuty.Cache:GetDuties(raid_info, class_players)
         end
         if not duties then
-            duties = BuffDuty.getDutiesTable(cmd, raid_info, class_players)
+            duties = BuffDuty.generateDuties(cmd, raid_info, class_players)
             BuffDuty.Cache:AddEntry(raid_info, class_players, duties)
         end
 
