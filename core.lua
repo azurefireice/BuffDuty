@@ -50,8 +50,8 @@ local function executeDuty(input)
         channel_id = nil,
         -- Tables
         excluded = {},
-        order = {},
-        assign = {},
+        order = nil,
+        assign = nil,
         -- Logic settings
         own_group = {},
         -- Custom message settings, listed here for reference
@@ -66,15 +66,18 @@ local function executeDuty(input)
     }
 
     if BuffDuty.Console.parseDutyCommand(cmd, LibStub("AceConsole-3.0"):GetArgs(input, 20)) then
+        -- Scan the raid
         local raid_info, class_players = BuffDuty.RaidInfo.Scan(cmd.class, cmd.excluded)
-
+        -- Generate a cache hash key
+        local cache_key = BuffDuty.Cache.generateHash(raid_info, class_players)
+        -- Retrieve or generate duties
         local duties = nil
         if cmd.cache then
-            duties = BuffDuty.Cache:GetDuties(raid_info, class_players)
+            duties = BuffDuty.Cache:GetDuties(cache_key)
         end
         if not duties then
-            duties = BuffDuty.generateDuties(cmd, raid_info, class_players)
-            BuffDuty.Cache:AddEntry(raid_info, class_players, duties)
+            duties = BuffDuty.generateDuties(cmd, raid_info, class_players) -- NOTE: Logic polutes raid_info and class_players
+            BuffDuty.Cache:AddEntry(cache_key, duties)
         end
 
         BuffDuty.printDuties(cmd, cmd.channel_type, cmd.channel_id, duties)
