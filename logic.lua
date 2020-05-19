@@ -182,6 +182,19 @@ end
 
 ------------ ASSIGN LOGIC ------------
 Logic.Assign = {}
+
+local function parse_equation(eq_str, operators)
+    local idx = nil
+    for _, op in pairs(operators) do
+        idx = string.find(eq_str, op, 1, true) -- plain search; i.e ignore pattens
+        if idx then break end
+    end
+    local lhs = idx and string.sub(eq_str, 1, idx - 1) or eq_str
+    local rhs = idx and string.sub(eq_str, idx + 1, -1)
+    local op = idx and string.sub(eq_str, idx, idx)
+    return lhs, op, rhs
+end
+
 function Logic.Assign.generateDutyMap(cmd, raid_info, class_players)
     -- Local aliases
     local group_count = raid_info.group_count
@@ -223,8 +236,8 @@ function Logic.Assign.generateDutyMap(cmd, raid_info, class_players)
 
     -- Iterate groups from start to limit (inclusive) returning the first available group, or nil
     local function get_next_group(start, limit, reverse)
-        start = start or (reverse and group_min or group_max)
-        limit = limit or (reverse and group_max or group_min)
+        start = start or (reverse and group_max or group_min)
+        limit = limit or (reverse and group_min or group_max)
         local increment = reverse and -1 or 1
         for group = start, limit, increment do
             if raid_groups[group] then

@@ -31,7 +31,7 @@ function Cache:Initialise()
 end
 
 function Cache:CleanUp()
-    -- Scan cache for old entries and delete them
+    -- Scan cache for old or invalid entries and delete them
     local keys = utils.getTableKeys(self.duties_cache)
     for idx = 1, #keys do
         local key = keys[idx]

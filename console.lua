@@ -122,7 +122,7 @@ local function parseAssign(input)
             -- Parse group sets
             local sets = utils.stringSplit(group_str, "%[%]$") -- Split into [ ] sets
             for k = 1, #sets do
-                local condition_groups = utils.stringSplit(group_sets[k], "|") -- Seperate condition from groups
+                local condition_groups = utils.stringSplit(sets[k], "|") -- Seperate condition from groups
                 if #condition_groups > 1 then -- Condition and Groups
                     local n = tonumber(condition_groups[1])
                     if n then 
