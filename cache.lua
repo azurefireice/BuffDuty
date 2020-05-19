@@ -27,15 +27,21 @@ function Cache.generateHash(raid_info, class_players)
 end
 
 function Cache:Initialise()
+   self:CleanUp()
+end
+
+function Cache:CleanUp()
     -- Scan cache for old entries and delete them
     local keys = utils.getTableKeys(self.duties_cache)
     for idx = 1, #keys do
         local key = keys[idx]
         local entry = self.duties_cache[key]
         if type(entry) == "table" then 
-            if entry.version ~= FORMAT_VERSION then
+            if (entry.version or 0) ~= FORMAT_VERSION then
                 self.duties_cache[key] = nil
-            elseif (getTime() - entry.time) > CACHE_TIMEOUT then
+            elseif (getTime() - (entry.time or 0)) > CACHE_TIMEOUT then
+                self.duties_cache[key] = nil
+            elseif not entry.duties then
                 self.duties_cache[key] = nil
             end
         else
