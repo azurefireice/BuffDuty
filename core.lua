@@ -1,7 +1,11 @@
 BuffDuty = LibStub("AceAddon-3.0"):NewAddon("BuffDuty", "AceConsole-3.0")
+BuffDuty.VERSION = {KEY="160", MAJOR=1, MINOR=6, PATCH=0}
 local DUTY_COMMAND = "buffduty"
 local MESSAGE_COMMAND = "buffduty-msg"
 local defaults = {
+    global = {
+        version = {}
+    },
     factionrealm = {
         duties_cache = {},
         custom_messages = {}
@@ -21,8 +25,15 @@ function BuffDuty:init()
     BuffDuty.Cache.duties_cache = self.db.factionrealm.duties_cache
     BuffDuty.Messages.custom_messages = self.db.factionrealm.custom_messages
 
+    BuffDuty.Cache:Initialise()
+
     BuffDuty.Messages:Initialise()
     BuffDuty.Messages:Load()
+
+    -- Version Update
+    if not (self.db.global.version.KEY == BuffDuty.VERSION.KEY) then
+        self.db.global.version = BuffDuty.VERSION -- Set updated version
+    end
 end
 
 local function executeDuty(input)
@@ -41,6 +52,7 @@ local function executeDuty(input)
         excluded = {},
         order = {},
         assign = {},
+        -- Logic settings
         own_group = {},
         -- Custom message settings, listed here for reference
         public_title = nil,
@@ -49,7 +61,7 @@ local function executeDuty(input)
         single_message = nil,
         single_whisper = nil,
         -- Flags
-        Cache = true,
+        cache = true,
         debug = false,
     }
 
@@ -58,11 +70,11 @@ local function executeDuty(input)
 
         local duties = nil
         if cmd.cache then
-            duties = BuffDuty.Cache:getFromCache(cmd, raid_info, class_players)
+            duties = BuffDuty.Cache:GetDuties(raid_info, class_players)
         end
         if not duties then
             duties = BuffDuty.getDutiesTable(cmd, raid_info, class_players)
-            BuffDuty.Cache:addToCache(cmd, raid_info, class_players, duties)
+            BuffDuty.Cache:AddEntry(raid_info, class_players, duties)
         end
 
         BuffDuty.printDuties(cmd, cmd.channel_type, cmd.channel_id, duties)

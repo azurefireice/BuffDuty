@@ -2,7 +2,7 @@
 ### Restructure of logic
 
 ### Added ###
-  * 'cache' argument to /buffduty command, set value 'off' to disable cache
+  * 'no-cache' argument to /buffduty command, disables cache
   * 'own-group' argument to /buffduty command, set values 'priority','single' or 'ignore' to change logic
   * localisation.lua as a step towards localisation
   * raidinfo.lua to seperate raid scanning from logic

@@ -31,7 +31,7 @@ function RaidInfo.Scan(class, excluded)
     raid_info.group_count = 0
     raid_info.group_min = 8 -- Start high so logic works
     raid_info.group_max = 1 -- Start low so logic works
-    raid_info.groups = {}
+    raid_info.groups = {[1]=false,[2]=false,[3]=false,[4]=false,[5]=false,[6]=false,[7]=false,[8]=false}
 
     local class_players = {}
     class_players.count = 0

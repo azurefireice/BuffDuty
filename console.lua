@@ -225,12 +225,9 @@ function Console.parseDutyCommand(cmd, ...)
     option_table["own-group"] = own_group
     option_table["-own"] = own_group
 
-    local cache = {has_value = true}
-    cache.execute = function(cmd, value) 
-        if value:lower() == "off" then cmd.cache = false end
-    end
-    option_table["cache"] = cache
-    option_table["-c"] = cache
+    local nocache = {}
+    nocache.execute = function(cmd, value) cmd.cache = false end
+    option_table["no-cache"] = nocache
 
     local debug = {}
     debug.execute = function(cmd, value) cmd.debug = true end
