@@ -1,4 +1,6 @@
--- local aliases
+local Logic = {}
+
+-- Upvalues
 local utils = BuffDuty.Utils
 
 -- Generates and returns a duty list in the following format:
@@ -12,7 +14,7 @@ function BuffDuty.generateDuties(cmd, raid_info, class_players)
         return {} 
     end
     -- One player to assign :/
-    if (class_player.count == 1) then
+    if (class_players.count == 1) then
         local name = next(class_players.map)
         local duty = {}
         duty["name"] = name
@@ -31,9 +33,9 @@ function BuffDuty.generateDuties(cmd, raid_info, class_players)
 
     local player_duty_map = nil
     if cmd.assign then
-        player_duty_map = generateDutyMapAssign(cmd, raid_info, class_players)
+        player_duty_map = Logic.Assign.generateDutyMap(cmd, raid_info, class_players)
     else
-        player_duty_map = generateDutyMap(cmd, raid_info, class_players)
+        player_duty_map = Logic.Default.generateDutyMap(cmd, raid_info, class_players)
     end
 
     local function generate_duty(player)
@@ -63,9 +65,10 @@ function BuffDuty.generateDuties(cmd, raid_info, class_players)
 end
 
 ------------ DEFAULT LOGIC ------------
-local function generateDutyMap(cmd, raid_info, class_players)
+Logic.Default = {}
+function Logic.Default.generateDutyMap(cmd, raid_info, class_players)
     -- Local aliases
-    local group_count = raid_info.groups_count
+    local group_count = raid_info.group_count
     local raid_groups = raid_info.groups
     local player_count = class_players.count
     local player_map = class_players.map
@@ -178,9 +181,10 @@ local function generateDutyMap(cmd, raid_info, class_players)
 end
 
 ------------ ASSIGN LOGIC ------------
-local function generateDutyMapAssign(cmd, raid_info, class_players)
+Logic.Assign = {}
+function Logic.Assign.generateDutyMap(cmd, raid_info, class_players)
     -- Local aliases
-    local group_count = raid_info.groups_count
+    local group_count = raid_info.group_count
     local group_min = raid_info.group_min
     local group_max = raid_info.group_max
     local raid_groups = raid_info.groups

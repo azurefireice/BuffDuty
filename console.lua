@@ -1,7 +1,7 @@
 local Console = {}
 BuffDuty.Console = Console
 
--- Local aliases
+-- Upvalues
 local utils = BuffDuty.Utils
 
 -- Validate the argurment as not nil and not the final value that AceConsole appends
@@ -163,7 +163,7 @@ function Console.parseDutyCommand(cmd, ...)
     end
 
     -- Check for standard arguments
-    if not (argValid(1) and argValid(2)) then
+    if not (argValid(arg, 1) and argValid(arg, 2)) then
         BuffDuty.printErrorMessage("Class and Channel required")
         BuffDuty.printInfoMessage("Usage: /buffduty class channel [channel_name] [options]")
         BuffDuty.printInfoMessage("Type '/buffduty help' or see the README for further details")
@@ -193,7 +193,7 @@ function Console.parseDutyCommand(cmd, ...)
             cmd.channel_type = BuffDuty.CHANNELS.BATTLEGROUND
         end
     elseif cmd.channel_type == BuffDuty.CHANNELS.CUSTOM then
-        if not argValid(3) then
+        if not argValid(arg, 3) then
             BuffDuty.printErrorMessage("Channel Name required for Custom Channel")
             BuffDuty.printInfoMessage(string.format("Usage: /buffduty %s %s channel_name [options]", arg[1], arg[2]))
             return false
@@ -224,7 +224,7 @@ function Console.parseDutyCommand(cmd, ...)
     option_table["a"] = assign
 
     local own_group = {has_value = true}
-    own_group.execute = function(cmd, value) cmd.own_group = stringSplitAsFlags(value, ",") end
+    own_group.execute = function(cmd, value) cmd.own_group = utils.stringSplitAsFlags(value, ",") end
     option_table["own-group"] = own_group
     option_table["-own"] = own_group
 
