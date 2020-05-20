@@ -60,7 +60,7 @@ end
 
 function Utils.stringSplitAsFlags(input, separator)
     local list = {}
-    for value in string.gmatch(input, "([^"..seperator.."]+)") do -- Match all characters between seperators
+    for value in string.gmatch(input, "([^"..separator.."]+)") do -- Match all characters between separators
         if value and #value > 1 then
             list[value:lower()] = true
         end
