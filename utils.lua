@@ -48,10 +48,10 @@ function Utils.sortStringArray(string_array)
     end)
 end
 
-function Utils.stringSplit(input, seperator)
+function Utils.stringSplit(input, separator)
     local list = {}
     local idx = 0
-    for value in string.gmatch(input, "([^"..seperator.."]+)") do -- Match all characters between seperators
+    for value in string.gmatch(input, "([^"..separator.."]+)") do -- Match all characters between separators
         idx = idx + 1
         list[idx] = value
     end
