@@ -58,7 +58,7 @@ function Utils.stringSplit(input, seperator)
     return list
 end
 
-function Utils.stringSplitAsFlags(input, seperator)
+function Utils.stringSplitAsFlags(input, separator)
     local list = {}
     for value in string.gmatch(input, "([^"..seperator.."]+)") do -- Match all characters between seperators
         if value and #value > 1 then
