@@ -14,7 +14,8 @@ local function getRaidMemberCount()
     return GetNumGroupMembers() -- WOW API: https://wowwiki.fandom.com/wiki/API_GetNumGroupMembers
 end
 
--- Scans the raid returns the following two data tables:
+-- Scans the raid returns two data tables `raid_info`, `class_players`.
+-- Table structure:
 -- raid_info.member_count - total number of players in the raid
 -- raid_info.group_count - the number of valid groups in the raid
 -- raid_info.group_min - the lowest numbered raid group; e.g. 1 in most cases
