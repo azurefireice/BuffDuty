@@ -6,7 +6,7 @@ BuffDuty.Cache = Cache
 local FORMAT_VERSION = 2
 local CACHE_TIMEOUT = 2419200 -- 4 Weeks
 
--- local aliases
+-- Upvalues
 local utils = BuffDuty.Utils
 
 local function getTime()
@@ -31,8 +31,9 @@ function Cache:Initialise()
 end
 
 function Cache:CleanUp()
+    -- Copy keys to a seperate table to avoid issues with manipulating duties_cache while iterating it
+    local keys = BuffDuty.Utils.getTableKeys(self.duties_cache)
     -- Scan cache for old or invalid entries and delete them
-    local keys = utils.getTableKeys(self.duties_cache)
     for idx = 1, #keys do
         local key = keys[idx]
         local entry = self.duties_cache[key]
