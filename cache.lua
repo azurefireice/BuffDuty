@@ -4,7 +4,7 @@ Cache.duties_cache = {}
 BuffDuty.Cache = Cache
 
 local FORMAT_VERSION = 2
-local CACHE_TIMEOUT = 2419200 -- 4 Weeks
+local CACHE_TIMEOUT = 57600 -- 16 Hours (in seconds)
 
 -- Upvalues
 local utils = BuffDuty.Utils
@@ -71,7 +71,7 @@ function Cache:GetDuties(key)
     if not entry or type(entry) ~= "table" then
         return nil
     end
-    -- Chech version
+    -- Check version
     if entry.version ~= FORMAT_VERSION then
         return nil
     end
