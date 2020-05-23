@@ -52,7 +52,7 @@ function RaidInfo.Scan(class, excluded)
             end
         end
         -- Setup class players
-        if player_name and player_class == class and (not utils.containsName(excluded, player_name)) then
+        if player_name and player_class == class and (not utils.containsStringValue(excluded, player_name)) then
             class_players.count = class_players.count + 1
             class_players.map[player_name] = {
                 idx = class_players.count,

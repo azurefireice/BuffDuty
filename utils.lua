@@ -1,6 +1,18 @@
 local Utils = {}
 BuffDuty.Utils = Utils
 
+function Utils.containsStringValue(table, string_value)
+    if not table or not string_value then
+        return false
+    end
+    string_value = string_value:lower()
+    for _, value in pairs(table) do
+        if string_value == string.lower(value) then
+            return true
+        end
+    end
+    return false
+end
 
 function Utils.containsName(table, name, get_name_func)
     if not table or not name then
