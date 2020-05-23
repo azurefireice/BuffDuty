@@ -109,20 +109,24 @@ function Logic.Default.generateDutyMap(cmd, raid_info, class_players)
     local ordered_count = 0
     -- Order list first
     if cmd.order then
+        if cmd.debug then BuffDuty.printDebugMessage("Ordered Players:") end
         for idx = 1, #cmd.order do
             local player = player_map[cmd.order[idx]]
             if player then
                 ordered_count = ordered_count + 1
                 ordered_players[ordered_count] = player.name
+                if cmd.debug then BuffDuty.printDebugMessage(string.format("#%d - %s", ordered_count, player.name)) end
             end
         end 
     end
     -- Non-ordered players
+    if cmd.debug then BuffDuty.printDebugMessage("Non-Ordered Players:") end
     local idx = ordered_count
     for name in pairs(player_map) do
-        if not utils.containsName(ordered_players, name) then
+        if not utils.containsStringValue(ordered_players, name) then
             idx = idx + 1
             ordered_players[idx] = name
+            if cmd.debug then BuffDuty.printDebugMessage(string.format("#%d - %s", idx, name)) end
         end
     end
     
@@ -135,7 +139,8 @@ function Logic.Default.generateDutyMap(cmd, raid_info, class_players)
     -- Assign own groups
     if not cmd.own_group["ignore"] then
         -- Only assign own group if the player has a single duty
-        local single_duty = cmd.own_group["single"] 
+        local single_duty = cmd.own_group["single"]
+        if cmd.debug then BuffDuty.printDebugMessage(string.format("Assign Own Groups: %s %s", (cmd.own_group["order"] and "ORDER" or "REVERSE"), (single_duty and "SINGLE" or ""))) end
         -- Helper function to validate and assign own group
         local function assign_own_group(player)
             if player and raid_groups[player.group] and (player.duties > 0) and ((not single_duty) or player.duties == 1) then
@@ -164,8 +169,9 @@ function Logic.Default.generateDutyMap(cmd, raid_info, class_players)
         return nil
     end
 
-    -- Assign any remaining groups to players
-    for _, player in pairs(player_map) do
+    -- Assign any remaining groups to players in order
+    for idx = 1, #ordered_players do
+        local player = player_map[ordered_players[idx]]
         set_player_duties(player)
         
         while player.duties > 0 do
