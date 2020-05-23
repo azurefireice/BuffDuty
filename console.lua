@@ -151,7 +151,7 @@ function Console.parseDutyCommand(cmd, args)
     -- Print Usage Help
     if args[1] == "?" or args[1] == "help" or args[1] == "-h" then
         BuffDuty.printInfoMessage("Usage: /buffduty class channel [channel_name] [options]")
-        BuffDuty.printInfoMessage("class | Mage, Priest, Druid, Paladin")
+        BuffDuty.printInfoMessage("class | Mage, Priest, Druid, Paladin, Hunter, Rogue, Shaman, Warlock, Warrior")
         BuffDuty.printInfoMessage("channel | Say, Raid, Whisper, Channel")
         BuffDuty.printInfoMessage("channel_name | Custom Channel name")
         BuffDuty.printInfoMessage("Options:")
@@ -182,6 +182,7 @@ function Console.parseDutyCommand(cmd, args)
     if not cmd.channel_type then
         BuffDuty.printErrorMessage(string.format("Unsupported channel type: %s", args[2]))
         BuffDuty.printInfoMessage("Type '/buffduty help' or see the README for further details")
+        return false
     end
 
     local idx = 3 -- Set Options starting index to 3
