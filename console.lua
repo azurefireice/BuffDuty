@@ -5,8 +5,8 @@ BuffDuty.Console = Console
 local utils = BuffDuty.Utils
 
 -- Validate the argurment as not nil and not the final value that AceConsole appends
-local function argValid(arg, idx)
-    return (arg[idx] and not (idx == #arg)) 
+local function argValid(args, idx)
+    return (args[idx] and not (idx == #args)) 
 end
 
 -- Executes optional arguments
@@ -15,9 +15,9 @@ end
 -- option.validate = function(value) return ok, error_msg
 -- option.onError = function(error) return isFatal
 -- option.execute = function(cmd, value)
-local function executeOptionalArgs(cmd, arg, idx, option_table)
-    while argValid(arg, idx) do
-        local tag = string.match(arg[idx], "^[%a%-]+") -- Match starting letters including '-'
+local function executeOptionalArgs(cmd, args, idx, option_table)
+    while argValid(args, idx) do
+        local tag = string.match(args[idx], "^[%a%-]+") -- Match starting letters including '-'
         if tag then tag = tag:lower() end -- Make case insensitive
         local option = option_table[tag]
         -- Check that the option is valid
@@ -25,13 +25,13 @@ local function executeOptionalArgs(cmd, arg, idx, option_table)
             -- Check if the option has a following value
             if option.has_value then
                 idx = idx + 1
-                if not argValid(arg, idx) then
+                if not argValid(args, idx) then
                     BuffDuty.printErrorMessage("Missing "..tag.." value")
                     return false
                 end
             end
             -- Get the value
-            local value = arg[idx]
+            local value = args[idx]
             -- Validate the value
             local status, result = true, true
             if option.validate then 
@@ -138,19 +138,18 @@ local function parseAssign(input)
 end
 
 -- Command for /buffduty
-function Console.parseDutyCommand(cmd, ...)
-    local arg = {...} -- Argument list
-    local idx = 0
-    --for i = 0, #arg do print(i, arg[i]) end -- Debug
+function Console.parseDutyCommand(cmd, args)
+    --local args = {...} -- Argument list
+    --for i = 0, #args do print(i, args[i]) end -- Debug
 
     -- Print version
-    if arg[1] == "version" or arg[1] == "-v" then
+    if args[1] == "version" or args[1] == "-v" then
         BuffDuty.printInfoMessage(string.format("Version: %d.%d.%d", BuffDuty.VERSION.MAJOR, BuffDuty.VERSION.MINOR, BuffDuty.VERSION.PATCH))
         return false
     end
 
     -- Print Usage Help
-    if arg[1] == "?" or arg[1] == "help" or arg[1] == "-h" then
+    if args[1] == "?" or args[1] == "help" or args[1] == "-h" then
         BuffDuty.printInfoMessage("Usage: /buffduty class channel [channel_name] [options]")
         BuffDuty.printInfoMessage("class | Mage, Priest, Druid, Paladin")
         BuffDuty.printInfoMessage("channel | Say, Raid, Whisper, Channel")
@@ -163,7 +162,7 @@ function Console.parseDutyCommand(cmd, ...)
     end
 
     -- Check for standard arguments
-    if not (argValid(arg, 1) and argValid(arg, 2)) then
+    if not (argValid(args, 1) and argValid(args, 2)) then
         BuffDuty.printErrorMessage("Class and Channel required")
         BuffDuty.printInfoMessage("Usage: /buffduty class channel [channel_name] [options]")
         BuffDuty.printInfoMessage("Type '/buffduty help' or see the README for further details")
@@ -171,21 +170,21 @@ function Console.parseDutyCommand(cmd, ...)
     end
 
     -- Class
-    cmd.class = BuffDuty.SUPPORTED_CLASSES[string.upper(arg[1])]
+    cmd.class = BuffDuty.SUPPORTED_CLASSES[string.upper(args[1])]
     if not cmd.class then
-        BuffDuty.printErrorMessage(string.format("Unsupported class: %s", arg[1]))
+        BuffDuty.printErrorMessage(string.format("Unsupported class: %s", args[1]))
         BuffDuty.printInfoMessage("Type '/buffduty help' or see the README for further details")
         return false
     end
 
     -- Channel Type
-    cmd.channel_type = BuffDuty.SUPPORTED_CHANNELS[string.upper(arg[2])]
+    cmd.channel_type = BuffDuty.SUPPORTED_CHANNELS[string.upper(args[2])]
     if not cmd.channel_type then
-        BuffDuty.printErrorMessage(string.format("Unsupported channel type: %s", arg[2]))
+        BuffDuty.printErrorMessage(string.format("Unsupported channel type: %s", args[2]))
         BuffDuty.printInfoMessage("Type '/buffduty help' or see the README for further details")
     end
 
-    idx = 3 -- Set Options starting index to 3
+    local idx = 3 -- Set Options starting index to 3
     if cmd.channel_type == BuffDuty.CHANNELS.RAID then
         local inInstance, instanceType = IsInInstance() -- WOW API: https://wowwiki.fandom.com/wiki/API_IsInInstance
         -- If a person is in a BG then use the battleground channel
@@ -193,15 +192,15 @@ function Console.parseDutyCommand(cmd, ...)
             cmd.channel_type = BuffDuty.CHANNELS.BATTLEGROUND
         end
     elseif cmd.channel_type == BuffDuty.CHANNELS.CUSTOM then
-        if not argValid(arg, 3) then
+        if not argValid(args, 3) then
             BuffDuty.printErrorMessage("Channel Name required for Custom Channel")
-            BuffDuty.printInfoMessage(string.format("Usage: /buffduty %s %s channel_name [options]", arg[1], arg[2]))
+            BuffDuty.printInfoMessage(string.format("Usage: /buffduty %s %s channel_name [options]", args[1], args[2]))
             return false
         end
         
-        cmd.channel_id = GetChannelName(arg[3]) -- WOW API: https://wowwiki.fandom.com/wiki/API_GetChannelName
+        cmd.channel_id = GetChannelName(args[3]) -- WOW API: https://wowwiki.fandom.com/wiki/API_GetChannelName
         if (not cmd.channel_id) or cmd.channel_id == 0 then
-            BuffDuty.printErrorMessage(string.format("Custom channel name '%s' not found", arg[3]))
+            BuffDuty.printErrorMessage(string.format("Custom channel name '%s' not found", args[3]))
             return false
         end
 
@@ -239,15 +238,15 @@ function Console.parseDutyCommand(cmd, ...)
 
     setMessageOptions(option_table)
 
-    return executeOptionalArgs(cmd, arg, idx, option_table)
+    return executeOptionalArgs(cmd, args, idx, option_table)
 end
 
 -- Command for /buffduty-msg
-function Console.parseMessageCommand(cmd, ...)
-    local arg = {...} -- Argument list
+function Console.parseMessageCommand(cmd, args)
+    --local args = {...} -- Argument list
 
     -- Print Usage Help
-    if arg[1] == "?" or arg[1] == "help" or arg[1] == "-h" then
+    if args[1] == "?" or args[1] == "help" or args[1] == "-h" then
         BuffDuty.printInfoMessage("Usage: /buffduty-msg [options]")
         BuffDuty.printInfoMessage("reset type1,type2 | Reset listed messages types, or all, to default values")
         BuffDuty.printInfoMessage("public-title \"custom message\" | Set Public Title to \"custom message\"")
@@ -272,5 +271,5 @@ function Console.parseMessageCommand(cmd, ...)
     
     setMessageOptions(option_table)
 
-    return executeOptionalArgs(cmd, arg, 1, option_table)
+    return executeOptionalArgs(cmd, args, 1, option_table)
 end

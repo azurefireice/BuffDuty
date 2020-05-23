@@ -36,6 +36,10 @@ function BuffDuty:init()
     end
 end
 
+local function pack(...)
+    return {...}
+end
+
 local function executeDuty(input)
     -- Checks whether makes sense to assign people
     if (GetNumGroupMembers() < 10) then -- WOW API: https://wowwiki.fandom.com/wiki/API_GetNumGroupMembers
@@ -65,7 +69,9 @@ local function executeDuty(input)
         debug = false,
     }
 
-    if BuffDuty.Console.parseDutyCommand(cmd, LibStub("AceConsole-3.0"):GetArgs(input, 20)) then
+    local max_args = 20
+    local args = pack(LibStub("AceConsole-3.0"):GetArgs(input, max_args))
+    if BuffDuty.Console.parseDutyCommand(cmd, args) then
         -- Scan the raid
         local raid_info, class_players = BuffDuty.RaidInfo.Scan(cmd.class, cmd.excluded)
         -- Generate a cache hash key
@@ -105,7 +111,9 @@ local function executeMessage(input)
         verbose = false
     }
 
-    if(BuffDuty.Console.parseMessageCommand(cmd, LibStub("AceConsole-3.0"):GetArgs(input, 14))) then
+    local max_args = 14
+    local args = pack(LibStub("AceConsole-3.0"):GetArgs(input, max_args))
+    if BuffDuty.Console.parseMessageCommand(cmd, args) then
         if cmd.reset then
             BuffDuty.Messages:Reset(cmd.reset, cmd.verbose)
         end
