@@ -154,10 +154,13 @@ function Console.parseDutyCommand(cmd, args)
         BuffDuty.printInfoMessage("class | Mage, Priest, Druid, Paladin, Hunter, Rogue, Shaman, Warlock, Warrior")
         BuffDuty.printInfoMessage("channel | Say, Raid, Whisper, Channel")
         BuffDuty.printInfoMessage("channel_name | Custom Channel name")
-        BuffDuty.printInfoMessage("Options:")
-        BuffDuty.printInfoMessage("e{player1,player2} | Exclude List - listed players will not be assigned buffing duties")
-        BuffDuty.printInfoMessage("o{player1,player2} | Order List - listed players are prioritised for buffing duties dependant on logic")
-        BuffDuty.printInfoMessage("a{player1=1,2;player2=own} | Assign List - listed players are assigned specified the groups if available")
+        BuffDuty.printInfoMessage(" -- Options --")
+        BuffDuty.printInfoMessage("e{player1,player2} - Listed players are excluded from duty assignments")
+        BuffDuty.printInfoMessage("Ordered Logic:")
+        BuffDuty.printInfoMessage("o{player1,player2} - Listed players are prioritised for duty assignments")
+        BuffDuty.printInfoMessage("own-group | order,single OR ignore - Change own group assignment logic")
+        BuffDuty.printInfoMessage("Direct Assign Logic:")
+        BuffDuty.printInfoMessage("a{player1=1,2;player2=own} | Listed players are assigned the specified groups (if available)")
         return false
     end
 
