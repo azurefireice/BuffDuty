@@ -1,7 +1,11 @@
 BuffDuty = LibStub("AceAddon-3.0"):NewAddon("BuffDuty", "AceConsole-3.0")
-local CHAT_COMMAND = "buffduty"
+BuffDuty.VERSION = {KEY="160", MAJOR=1, MINOR=6, PATCH=0}
+local DUTY_COMMAND = "buffduty"
 local MESSAGE_COMMAND = "buffduty-msg"
 local defaults = {
+    global = {
+        version = {}
+    },
     factionrealm = {
         duties_cache = {},
         custom_messages = {}
@@ -13,7 +17,7 @@ function BuffDuty:OnInitialize()
 end
 
 function BuffDuty:init()
-    self:RegisterChatCommand(CHAT_COMMAND, "Command")
+    self:RegisterChatCommand(DUTY_COMMAND, "CommandDuty")
     self:RegisterChatCommand(MESSAGE_COMMAND, "CommandMessage")
 
     --Init DataBase
@@ -21,48 +25,73 @@ function BuffDuty:init()
     BuffDuty.Cache.duties_cache = self.db.factionrealm.duties_cache
     BuffDuty.Messages.custom_messages = self.db.factionrealm.custom_messages
 
+    BuffDuty.Cache:Initialise()
+
     BuffDuty.Messages:Initialise()
     BuffDuty.Messages:Load()
+
+    -- Version Update
+    if not (self.db.global.version.KEY == BuffDuty.VERSION.KEY) then
+        self.db.global.version = BuffDuty.VERSION -- Set updated version
+    end
 end
 
-local function executeLogic(input)
+local function pack(...)
+    return {...}
+end
+
+local function executeDuty(input)
     -- Checks whether makes sense to assign people
-    if (GetNumGroupMembers() < 10) then
+    if (GetNumGroupMembers() < 10) then -- WOW API: https://wowwiki.fandom.com/wiki/API_GetNumGroupMembers
         BuffDuty.printInfoMessage("Current Group/Raid is too small. No sense in assigning buffs.")
         return
     end
 
-    -- Logic execution
-    local class, ch_type, channel_name, excluded, order = LibStub("AceConsole-3.0"):GetArgs(input, 5)
-    class, ch_type, channel_name = BuffDuty:convertArgs(class, ch_type, channel_name)
-    BuffDuty:validateArgs(class, ch_type, channel_name)
-    if ch_type ~= BuffDuty.CUSTOM_CHANNEL_TYPE then
-        order = excluded
-        excluded = channel_name
-    end
-    if excluded and string.sub(excluded, 1, 1) == "o" then
-        order = excluded
-    end
-    excluded = BuffDuty:convertPlayerList("e", excluded)
-    order = BuffDuty:convertPlayerList("o", order)
-    local duties = {}
+    local cmd = {
+        -- Base args, listed here for reference
+        class = nil,
+        channel_type = nil,
+        channel_id = nil,
+        -- Tables
+        excluded = {},
+        order = nil,
+        assign = nil,
+        -- Logic settings
+        own_group = {},
+        -- Custom message settings, listed here for reference
+        public_title = nil,
+        duty_line = nil,
+        duty_whisper = nil,
+        single_message = nil,
+        single_whisper = nil,
+        -- Flags
+        cache = true,
+        debug = false,
+    }
 
-    if (BuffDuty.Cache:cacheContains(class, excluded) and next(BuffDuty.Cache:getFromCache(class, excluded))) then
-        duties = BuffDuty.Cache:getFromCache(class, excluded)
-    else
-        duties = BuffDuty:getDutiesTable(class, excluded, order)
-        BuffDuty.Cache:addToCache(class, excluded, duties)
+    local max_args = 20
+    local args = pack(LibStub("AceConsole-3.0"):GetArgs(input, max_args))
+    if BuffDuty.Console.parseDutyCommand(cmd, args) then
+        -- Scan the raid
+        local raid_info, class_players = BuffDuty.RaidInfo.Scan(cmd.class, cmd.excluded)
+        -- Generate a cache hash key
+        local cache_key = BuffDuty.Cache.generateHash(raid_info, class_players)
+        -- Retrieve or generate duties
+        local duties = nil
+        if cmd.cache then
+            duties = BuffDuty.Cache:GetDuties(cache_key)
+        end
+        if not duties then
+            duties = BuffDuty.generateDuties(cmd, raid_info, class_players) -- NOTE: Logic polutes raid_info and class_players
+            BuffDuty.Cache:AddEntry(cache_key, duties)
+        end
+
+        BuffDuty.printDuties(cmd, cmd.channel_type, cmd.channel_id, duties)
     end
-
-    local cmd = {}
-    cmd.class = class
-    cmd.channel_name = channel_name
-
-    BuffDuty.printDuties(cmd, ch_type, duties)
 end
 
-function BuffDuty:Command(input)
-    local status, err = pcall(executeLogic, input)
+function BuffDuty:CommandDuty(input)
+    local status, err = pcall(executeDuty, input)
     if (not status) then
         print("Error while executing BuffDuty: \n" .. err)
     end
@@ -82,7 +111,9 @@ local function executeMessage(input)
         verbose = false
     }
 
-    if(BuffDuty.Console.parseMessageCommand(cmd, LibStub("AceConsole-3.0"):GetArgs(input, 12))) then
+    local max_args = 14
+    local args = pack(LibStub("AceConsole-3.0"):GetArgs(input, max_args))
+    if BuffDuty.Console.parseMessageCommand(cmd, args) then
         if cmd.reset then
             BuffDuty.Messages:Reset(cmd.reset, cmd.verbose)
         end

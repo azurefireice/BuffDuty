@@ -1,110 +1,12 @@
 local Console = {}
 BuffDuty.Console = Console
 
-
-BuffDuty.SAY_CHANNEL_TYPE = "SAY"
-BuffDuty.RAID_CHANNEL_TYPE = "RAID"
-BuffDuty.CUSTOM_CHANNEL_TYPE = "CHANNEL"
-BuffDuty.WHISPER_CHANNEL_TYPE = "WHISPER"
-BuffDuty.BG_CHANNEL_TYPE = "INSTANCE_CHAT"
-
-BuffDuty.MAGE_CLASS = "MAGE"
-BuffDuty.PRIEST_CLASS = "PRIEST"
-BuffDuty.DRUID_CLASS = "DRUID"
-
-BuffDuty.SUPPORTED_CLASSES = { [BuffDuty.MAGE_CLASS] = true, [BuffDuty.PRIEST_CLASS] = true,
-                               [BuffDuty.DRUID_CLASS] = true }
-
-BuffDuty.SUPPORTED_CHANNELS = { [BuffDuty.SAY_CHANNEL_TYPE] = true, [BuffDuty.RAID_CHANNEL_TYPE] = true,
-                                [BuffDuty.CUSTOM_CHANNEL_TYPE] = true, [BuffDuty.WHISPER_CHANNEL_TYPE] = true }
-
-local function expandClassArg(input)
-    if (input == "M") then
-        return BuffDuty.MAGE_CLASS
-    end
-    if (input == "P") then
-        return BuffDuty.PRIEST_CLASS
-    end
-    if (input == "D") then
-        return BuffDuty.DRUID_CLASS
-    end
-    return input
-end
-
-local function expandChannelTypeArg(input)
-    if (input == "S") then
-        return BuffDuty.SAY_CHANNEL_TYPE
-    end
-    if (input == "C") then
-        return BuffDuty.CUSTOM_CHANNEL_TYPE
-    end
-    if (input == "W") then
-        return BuffDuty.WHISPER_CHANNEL_TYPE
-    end
-    if (input == "R") then
-        return BuffDuty.RAID_CHANNEL_TYPE
-    end
-    return input
-end
-
-local function selectChannelType(input)
-    if (input == BuffDuty.RAID_CHANNEL_TYPE) then
-        local inInstance, instanceType = IsInInstance()
-        -- if a person is in BG - use the battleground channel
-        if (inInstance and instanceType == "pvp") then
-            return BuffDuty.BG_CHANNEL_TYPE
-        end
-    end
-    return input
-end
-
-function BuffDuty:convertArgs(class, ch_type, channel_name)
-    if not class then
-        class = BuffDuty.MAGE_CLASS
-    end
-    if not ch_type then
-        ch_type = BuffDuty.WHISPER_CHANNEL_TYPE
-    end
-
-    class, ch_type = class:upper(), ch_type:upper()
-    class = expandClassArg(class)
-    ch_type = expandChannelTypeArg(ch_type)
-    ch_type = selectChannelType(ch_type)
-    if ch_type == BuffDuty.CUSTOM_CHANNEL_TYPE then
-        channel_name = GetChannelName(channel_name)
-    end
-    return class, ch_type, channel_name
-end
-
-function BuffDuty:validateArgs(class, ch_type, channel_name)
-    if not BuffDuty.SUPPORTED_CLASSES[class] then
-        error("Class \"" .. class .. "\" is not supported.")
-    end
-    if not BuffDuty.SUPPORTED_CHANNELS[ch_type] then
-        error("Channel \"" .. ch_type .. "\" is not supported.")
-    end
-    if ch_type == BuffDuty.CUSTOM_CHANNEL_TYPE then
-        if channel_name == nil or channel_name == '' or channel_name == 0 then
-            error("Channel name specified for custom channel was not found.")
-        end
-    end
-end
-
-function BuffDuty:convertPlayerList(identifier, input)
-    if not input then
-        return {}
-    end
-    local result = {}
-    local players = string.gsub(input, identifier .. "\{(.*)\}", "%1")
-    for value in string.gmatch(players, '([^,]+)') do
-        table.insert(result, value)
-    end
-    return result
-end
+-- Upvalues
+local utils = BuffDuty.Utils
 
 -- Validate the argurment as not nil and not the final value that AceConsole appends
-local function argValid(arg, idx)
-    return (arg[idx] and not (idx == #arg)) 
+local function argValid(args, idx)
+    return (args[idx] and not (idx == #args)) 
 end
 
 -- Executes optional arguments
@@ -113,9 +15,9 @@ end
 -- option.validate = function(value) return ok, error_msg
 -- option.onError = function(error) return isFatal
 -- option.execute = function(cmd, value)
-local function executeOptionalArgs(cmd, arg, idx, option_table)
-    while argValid(arg, idx) do
-        local tag = string.match(arg[idx], "^[%a%-]+") -- Match starting letters including '-'
+local function executeOptionalArgs(cmd, args, idx, option_table)
+    while argValid(args, idx) do
+        local tag = string.match(args[idx], "^[%a%-]+") -- Match starting letters including '-'
         if tag then tag = tag:lower() end -- Make case insensitive
         local option = option_table[tag]
         -- Check that the option is valid
@@ -123,13 +25,13 @@ local function executeOptionalArgs(cmd, arg, idx, option_table)
             -- Check if the option has a following value
             if option.has_value then
                 idx = idx + 1
-                if not argValid(arg, idx) then
+                if not argValid(args, idx) then
                     BuffDuty.printErrorMessage("Missing "..tag.." value")
                     return false
                 end
             end
             -- Get the value
-            local value = arg[idx]
+            local value = args[idx]
             -- Validate the value
             local status, result = true, true
             if option.validate then 
@@ -159,41 +61,8 @@ local function executeOptionalArgs(cmd, arg, idx, option_table)
     return true
 end
 
-function Console.parseMessageCommand(cmd, ...)
-    local arg = {...} -- Argument list
-    
-    -- Local aliases
-    local utils = BuffDuty.Utils
-
-    -- Print Usage Help
-    if arg[1] == "?" or arg[1] == "help" or arg[1] == "-h" then
-        BuffDuty.printInfoMessage("Usage: /buffduty-msg [options]")
-        BuffDuty.printInfoMessage("reset type1,type2 | Reset listed messages types, or all, to default values")
-        BuffDuty.printInfoMessage("public-title \"custom message\" | Set Public Title to \"custom message\"")
-        BuffDuty.printInfoMessage("duty-line \"custom message\" | Set Duty Line to \"custom message\"")
-        BuffDuty.printInfoMessage("duty-whisper \"custom message\" | Set Duty Whisper to \"custom message\"")
-        BuffDuty.printInfoMessage("single-message \"custom message\" | Set Single Message to \"custom message\"")
-        BuffDuty.printInfoMessage("single-whisper \"custom message\" | Set Single Whisper to \"custom message\"")
-        return false
-    end
-
-    local option_table = {}
-
-    local verbose = {}
-    verbose.execute = function(cmd, value) cmd.verbose = true end
-    option_table["verbose"] = verbose
-    option_table["-v"] = verbose
-
-    local reset = {has_value = true}
-    reset.execute = function(cmd, value) 
-        cmd.reset = {}
-        for _,flag in pairs(utils.stringSplit(value, ",")) do
-            cmd.reset[flag:lower()] = true
-        end
-    end
-    option_table["reset"] = reset
-    option_table["-r"] = reset
-    
+-- Set the custom message commands in the options table
+local function setMessageOptions(option_table)
     local public_title = {has_value = true}
     public_title.validate = BuffDuty.Messages.validatePublicTitle
     public_title.execute = function(cmd, value) cmd.public_title = value end
@@ -223,6 +92,188 @@ function Console.parseMessageCommand(cmd, ...)
     single_whisper.execute = function(cmd, value) cmd.single_whisper = value end
     option_table["single-whisper"] = single_whisper
     option_table["-sw"] = single_whisper
+end
 
-    return executeOptionalArgs(cmd, arg, 1, option_table)
+-- Parse a list formatted as {item1,item2,item3,...}
+local function parseList(input)
+    local value = string.match(input, "%b{}") -- Match everything between { and } inclusive
+    if not value then return nil end
+    value = utils.stringTrim(value, "{", "}")
+    return utils.stringSplit(value, ",")
+end
+
+-- Parse the assign list formatted as {item1=v1,v2;item2=[i|v3];...}
+local function parseAssign(input)
+    local value = string.match(input, "%b{}") -- Match everything between { and } inclusive
+    if not value then return nil end
+    value = utils.stringTrim(value, "{", "}")
+
+    local list = utils.stringSplit(value, ";")
+    
+    -- Extract player names and check for pre-assinged groups
+    local assign = {}
+    for i = 1, #list do
+        local name_group = utils.stringSplit(list[i], "=")
+        assign[i] = {name = name_group[1], groups = nil}
+        -- Parse groups
+        local group_str = name_group[2]
+        if group_str and #group_str > 0 then
+            assign[i].groups = {}
+            -- Parse group sets
+            local sets = utils.stringSplit(group_str, "%[%]$") -- Split into [ ] sets
+            for k = 1, #sets do
+                local condition_groups = utils.stringSplit(sets[k], "|") -- Seperate condition from groups
+                if #condition_groups > 1 then -- Condition and Groups
+                    local n = tonumber(condition_groups[1])
+                    if n then 
+                        assign[i].groups[n] = utils.stringSplit(condition_groups[2], ",") 
+                    end
+                else -- Zero indexed Groups
+                    assign[i].groups[0] = utils.stringSplit(condition_groups[1], ",")
+                end
+            end
+        end
+    end
+    return assign
+end
+
+-- Command for /buffduty
+function Console.parseDutyCommand(cmd, args)
+    --local args = {...} -- Argument list
+    --for i = 0, #args do print(i, args[i]) end -- Debug
+
+    -- Print version
+    if args[1] == "version" or args[1] == "-v" then
+        BuffDuty.printInfoMessage(string.format("Version: %d.%d.%d", BuffDuty.VERSION.MAJOR, BuffDuty.VERSION.MINOR, BuffDuty.VERSION.PATCH))
+        return false
+    end
+
+    -- Print Usage Help
+    if args[1] == "?" or args[1] == "help" or args[1] == "-h" then
+        BuffDuty.printInfoMessage("Usage: /buffduty class channel [channel_name] [options]")
+        BuffDuty.printInfoMessage("class | Mage, Priest, Druid, Paladin, Hunter, Rogue, Shaman, Warlock, Warrior")
+        BuffDuty.printInfoMessage("channel | Say, Raid, Whisper, Channel")
+        BuffDuty.printInfoMessage("channel_name | Custom Channel name")
+        BuffDuty.printInfoMessage(" -- Options --")
+        BuffDuty.printInfoMessage("e{player1,player2} - Listed players are excluded from duty assignments")
+        BuffDuty.printInfoMessage("Ordered Logic:")
+        BuffDuty.printInfoMessage("o{player1,player2} - Listed players are prioritised for duty assignments")
+        BuffDuty.printInfoMessage("own-group | order,single OR ignore - Change own group assignment logic")
+        BuffDuty.printInfoMessage("Direct Assign Logic:")
+        BuffDuty.printInfoMessage("a{player1=1,2;player2=own} | Listed players are assigned the specified groups (if available)")
+        return false
+    end
+
+    -- Check for standard arguments
+    if not (argValid(args, 1) and argValid(args, 2)) then
+        BuffDuty.printErrorMessage("Class and Channel required")
+        BuffDuty.printInfoMessage("Usage: /buffduty class channel [channel_name] [options]")
+        BuffDuty.printInfoMessage("Type '/buffduty help' or see the README for further details")
+        return false
+    end
+
+    -- Class
+    cmd.class = BuffDuty.SUPPORTED_CLASSES[string.upper(args[1])]
+    if not cmd.class then
+        BuffDuty.printErrorMessage(string.format("Unsupported class: %s", args[1]))
+        BuffDuty.printInfoMessage("Type '/buffduty help' or see the README for further details")
+        return false
+    end
+
+    -- Channel Type
+    cmd.channel_type = BuffDuty.SUPPORTED_CHANNELS[string.upper(args[2])]
+    if not cmd.channel_type then
+        BuffDuty.printErrorMessage(string.format("Unsupported channel type: %s", args[2]))
+        BuffDuty.printInfoMessage("Type '/buffduty help' or see the README for further details")
+        return false
+    end
+
+    local idx = 3 -- Set Options starting index to 3
+    if cmd.channel_type == BuffDuty.CHANNELS.RAID then
+        local inInstance, instanceType = IsInInstance() -- WOW API: https://wowwiki.fandom.com/wiki/API_IsInInstance
+        -- If a person is in a BG then use the battleground channel
+        if (inInstance and instanceType == "pvp") then
+            cmd.channel_type = BuffDuty.CHANNELS.BATTLEGROUND
+        end
+    elseif cmd.channel_type == BuffDuty.CHANNELS.CUSTOM then
+        if not argValid(args, 3) then
+            BuffDuty.printErrorMessage("Channel Name required for Custom Channel")
+            BuffDuty.printInfoMessage(string.format("Usage: /buffduty %s %s channel_name [options]", args[1], args[2]))
+            return false
+        end
+        
+        cmd.channel_id = GetChannelName(args[3]) -- WOW API: https://wowwiki.fandom.com/wiki/API_GetChannelName
+        if (not cmd.channel_id) or cmd.channel_id == 0 then
+            BuffDuty.printErrorMessage(string.format("Custom channel name '%s' not found", args[3]))
+            return false
+        end
+
+        idx = 4 -- Set Options starting index to 4
+    end
+
+    -- Options
+    local option_table = {}
+
+    local excluded = {}
+    excluded.execute = function(cmd, value) cmd.excluded = parseList(value) end
+    option_table["e"] = excluded
+
+    local order = {}
+    order.execute = function(cmd, value) cmd.order = parseList(value) end
+    option_table["o"] = order
+
+    local assign = {}
+    assign.execute = function(cmd, value) cmd.assign = parseAssign(value) end
+    option_table["a"] = assign
+
+    local own_group = {has_value = true}
+    own_group.execute = function(cmd, value) cmd.own_group = utils.stringSplitAsFlags(value, ",") end
+    option_table["own-group"] = own_group
+    option_table["-own"] = own_group
+
+    local nocache = {}
+    nocache.execute = function(cmd, value) cmd.cache = false end
+    option_table["no-cache"] = nocache
+
+    local debug = {}
+    debug.execute = function(cmd, value) cmd.debug = true end
+    option_table["debug"] = debug
+    option_table["-d"] = debug
+
+    setMessageOptions(option_table)
+
+    return executeOptionalArgs(cmd, args, idx, option_table)
+end
+
+-- Command for /buffduty-msg
+function Console.parseMessageCommand(cmd, args)
+    --local args = {...} -- Argument list
+
+    -- Print Usage Help
+    if args[1] == "?" or args[1] == "help" or args[1] == "-h" then
+        BuffDuty.printInfoMessage("Usage: /buffduty-msg [options]")
+        BuffDuty.printInfoMessage("reset type1,type2 | Reset listed messages types, or all, to default values")
+        BuffDuty.printInfoMessage("public-title \"custom message\" | Set Public Title to \"custom message\"")
+        BuffDuty.printInfoMessage("duty-line \"custom message\" | Set Duty Line to \"custom message\"")
+        BuffDuty.printInfoMessage("duty-whisper \"custom message\" | Set Duty Whisper to \"custom message\"")
+        BuffDuty.printInfoMessage("single-message \"custom message\" | Set Single Message to \"custom message\"")
+        BuffDuty.printInfoMessage("single-whisper \"custom message\" | Set Single Whisper to \"custom message\"")
+        return false
+    end
+
+    local option_table = {}
+
+    local verbose = {}
+    verbose.execute = function(cmd, value) cmd.verbose = true end
+    option_table["verbose"] = verbose
+    option_table["-v"] = verbose
+
+    local reset = {has_value = true}
+    reset.execute = function(cmd, value) cmd.reset = utils.stringSplitAsFlags(value, ",") end
+    option_table["reset"] = reset
+    option_table["-r"] = reset
+    
+    setMessageOptions(option_table)
+
+    return executeOptionalArgs(cmd, args, 1, option_table)
 end

@@ -1,3 +1,19 @@
+## [1.6.0] - IN PROGRESS ##
+### Restructure of logic
+
+### Added ###
+  * 'no-cache' argument to /buffduty command, disables cache
+  * 'own-group' argument to /buffduty command, set values 'order','single' or 'ignore' to change logic
+  * /buffduty version command
+  * Assign logic for a{} argument to /buffduty command
+  * localisation.lua as a step towards localisation
+  * raidinfo.lua to seperate raid scanning from logic
+
+### Changed ###
+  * Updated console parsing for /buffduty command
+  * Overhauled logic to use cmd and raidinfo tables
+  * Reworked cache to avoid format conflicts
+
 ## [1.5.0] - 2020-05-12 ##
 ### Implemented message customisation
 
