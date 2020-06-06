@@ -18,13 +18,12 @@ Some edge cases:
   * When there are *8 and more buffing players* in a raid - groups are properly assigned to first 8 players in a fashion "Player5 - Group 5".
 
 ## Usage
-Mod functionality is available through a simple command
 
-**/buffduty**
+*  `/buffduty` - will print info message with example of BuffDuty help command
 
-*By default* message will be posted to for `mages` class, as `whisper` for each buffing player.
+* :bulb: Help. Use `/buffduty ?` or  `/buffduty help` or  `/buffduty -h` to get extended command options list.
 
-It also supports command line arguments in the following format:
+* Version. type `/buffduty version` or  `/buffduty -v` to get the currently installed version.
 
 ```/buffduty [class argument] [channel type] [(optional)channel name] [(optional)excluded players] [(optional)ordered players] ```
 
@@ -43,7 +42,8 @@ It also supports command line arguments in the following format:
     * *`e{player1,player2,..}`* - provide a list of players you want to exclude from BuffDuty. Please note that players are **comma separated**, no spaces in between. E.g. `e{putris,spaceBag}`.
 * ordered players argument(`case insensitive`, `optional`) - additional responsibilities list, similar to exclude, to allow additional duties for priority players. Players specified in this list are likely to get additional buffing duties.
     * *`o{player3,player5,..}`* - provide a list of players you want to give priority during assignment. Please note that players are **comma separated**, no spaces in between. E.g. `o{putris,spaceBag}`.
-  
+* :bulb: additional assignment options available. Refer to `/buffduty help` for more info.
+* 'no-cache' argument to /buffduty command, disables *caching* of results.
 
 _Hint_
 The way we currently using it - is we create a custom macro with this command and put it in UI for convenience. For example:
@@ -104,11 +104,8 @@ apparent to automate this process as well. This is how the Buff Duty was born.
     How to run tests?
 1. In [BuffDuty.toc](BuffDuty.toc) uncomment line `# tests.lua`
 1. Start WoW client
-1. Run the following commands(turn them into macros)
-    1. /buffduty-test-logic
-    1. /buffduty-test-cache
-    1. /reload
-    1. /buffduty-test-cache-after-reload
+1. In tests.lua change `mock_party_size` and `mock_players_num`
+1. Run desired /buffduty command
 1. Look for input in chat
 
 > :bulb: You may use `function dump(o)` in tests to turn tables to strings for printing them.

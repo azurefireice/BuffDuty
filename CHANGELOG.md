@@ -1,9 +1,10 @@
-## [1.6.0] - IN PROGRESS ##
-### Restructure of logic
+## [1.6.0] - 2020-06-06 ##
+### Restructure of logic, BuffDuty options and help
 
 ### Added ###
   * 'no-cache' argument to /buffduty command, disables cache
   * 'own-group' argument to /buffduty command, set values 'order','single' or 'ignore' to change logic
+  * /buffduty help command
   * /buffduty version command
   * Assign logic for a{} argument to /buffduty command
   * localisation.lua as a step towards localisation
