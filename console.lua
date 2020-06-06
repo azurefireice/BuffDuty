@@ -158,7 +158,7 @@ function Console.parseDutyCommand(cmd, args)
         BuffDuty.printInfoMessage("e{player1,player2} - Listed players are excluded from duty assignments")
         BuffDuty.printInfoMessage("Ordered Logic:")
         BuffDuty.printInfoMessage("o{player1,player2} - Listed players are prioritised for duty assignments")
-        BuffDuty.printInfoMessage("own-group | order,single OR ignore - Change own group assignment logic")
+        BuffDuty.printInfoMessage("own-group | order, single, ignore - Change own group assignment logic")
         BuffDuty.printInfoMessage("Direct Assign Logic:")
         BuffDuty.printInfoMessage("a{player1=1,2;player2=own} | Listed players are assigned the specified groups (if available)")
         return false
