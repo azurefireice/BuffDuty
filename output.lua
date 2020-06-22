@@ -39,13 +39,13 @@ function BuffDuty.printDuties(cmd, channel_type, channel_id, duty_table)
     
     -- No player has been assinged buffing duty
     if duty_count == 0 then 
-        printInfoMessage(string.format("No %ss to do buffs :(", utils.stringTitleCase(cmd.class)))
+        printInfoMessage(string.format("No %ss to do buffs :(", utils.prettyPrintList(cmd.classes, "s, ", "s or ", utils.stringTitleCase)))
         return 
     end
 
     -- Setup duty macros
     local duty_macros = {}
-    duty_macros["class"] = utils.stringTitleCase(cmd.class)
+    duty_macros["class"] = utils.prettyPrintList(cmd.classes, "s, ", "s and ", utils.stringTitleCase)
     duty_macros["s"] = (duty_count > 1) and "s" or ""
 
     -- Only a single player has been assigned buffing duty

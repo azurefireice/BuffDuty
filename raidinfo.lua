@@ -26,7 +26,7 @@ end
 -- class_players.map[name].idx - the index of the player, from 1 to count
 -- class_players.map[name].name - the name of the player
 -- class_players.map[name].group - the group the player is in
-function RaidInfo.Scan(class, excluded)
+function RaidInfo.Scan(classes, excluded)
     local raid_info = {}
     raid_info.member_count = getRaidMemberCount()
     raid_info.group_count = 0
@@ -52,7 +52,7 @@ function RaidInfo.Scan(class, excluded)
             end
         end
         -- Setup class players
-        if player_name and player_class == class and (not utils.containsStringValue(excluded, player_name)) then
+        if player_name and utils.containsStringValue(classes, player_class) and (not utils.containsStringValue(excluded, player_name)) then
             class_players.count = class_players.count + 1
             class_players.map[player_name] = {
                 idx = class_players.count,

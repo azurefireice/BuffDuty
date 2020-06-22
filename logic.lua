@@ -47,14 +47,7 @@ function BuffDuty.generateDuties(cmd, raid_info, class_players)
         local duty = {}
         duty["name"] = player.name
         duty["i"] = ((player.idx-1) % 8) + 1 -- a number between 1 and 8 (inclusive)
-
-        table.sort(player.groups)
-        local groups = ""
-        for _, v in pairs(player.groups) do
-            groups = groups .. v .. ","
-        end
-        groups = groups:sub(1, -2) -- remove last ","
-        duty["groups"] = groups
+        duty["groups"] = utils.prettyPrintList(player.groups, ",", ",", function (n) return string.format("%d", n) end)
         duty["s"] = (#player.groups > 1) and "s" or ""
         return duty
     end

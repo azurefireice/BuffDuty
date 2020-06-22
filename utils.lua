@@ -87,6 +87,26 @@ function Utils.stringTrim(value, start_patten, end_patten)
     return value
 end
 
+function Utils.prettyPrintList(list, separator, final_separator, format_value_func)
+    if not list then return nil end
+    
+    format_value_func = format_value_func or function(v) return v end
+    
+    if #list == 1 then 
+        return format_value_func(list[1]) 
+    end
+    
+    separator = separator or ","
+    final_separator = final_separator or separator
+    
+    local pretty = format_value_func(list[1])
+    for i = 2, #list-1 do
+        pretty = pretty .. separator .. format_value_func(list[i])
+    end
+    pretty = pretty .. final_separator .. format_value_func(list[#list])
+    return pretty
+end
+
 function Utils.stringTitleCase(input)
     local function tchelper(first, rest)
         return first:upper()..rest:lower()

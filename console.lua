@@ -173,11 +173,14 @@ function Console.parseDutyCommand(cmd, args)
     end
 
     -- Class
-    cmd.class = BuffDuty.SUPPORTED_CLASSES[string.upper(args[1])]
-    if not cmd.class then
-        BuffDuty.printErrorMessage(string.format("Unsupported class: %s", args[1]))
-        BuffDuty.printInfoMessage("Type '/buffduty help' or see the README for further details")
-        return false
+    local class_list = utils.stringSplit(args[1], ",")
+    for _, class in pairs(class_list) do
+        if not BuffDuty.SUPPORTED_CLASSES[string.upper(class)] then
+            BuffDuty.printErrorMessage(string.format("Unsupported class: %s", class))
+            BuffDuty.printInfoMessage("Type '/buffduty help' or see the README for further details")
+            return false
+        end
+        cmd.classes = class_list
     end
 
     -- Channel Type
