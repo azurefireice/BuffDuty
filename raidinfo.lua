@@ -15,6 +15,7 @@ local function getRaidMemberCount()
     return GetNumGroupMembers() -- WOW API: https://wowwiki.fandom.com/wiki/API_GetNumGroupMembers
 end
 
+-- Scan the list for a match to the player
 local function containsMatch(list, player)
     for _, func in pairs(list) do
         if func(player) then
@@ -24,35 +25,56 @@ local function containsMatch(list, player)
     return false
 end
 
+---- Matching Functions ---- 
+-- Match the players group
 function RaidInfo.MatchGroup(group)
     return function (player) 
         return player.group == group 
     end
 end
 
+-- Match the players class
 function RaidInfo.MatchClass(class)
     return function (player)
         return player.class == class
     end
 end
 
+-- Match the player as a 'caster'
 function RaidInfo.MatchCaster()
     return function (player)
         return player.class == "MAGE" or player.class == "PRIEST" or player.class == "WARLOCK"
     end
 end
 
+-- Match the player as a 'mana' user
+function RaidInfo.MatchManaUser()
+    return function (player)
+        return player.class == "MAGE" or player.class == "PRIEST" or player.class == "WARLOCK"
+        or player.class == "DRUID" or player.class == "PALADIN" or player.class == "SHAMAN"
+        or player.class == "HUNTER"
+    end
+end
+
+-- Select a Match function based on the given key
 function RaidInfo.GetMatchFunction(key)
+    if not key then return nil end
     -- Special
     if key == "mana" then
+        return RaidInfo.MatchManaUser()
+    end
+    if key == "caster" then
         return RaidInfo.MatchCaster()
     end
-    -- Groups
+    -- Class
+    if BuffDuty.CLASSES[key:upper()] then
+        return RaidInfo.MatchClass(key:upper())
+    end
+    -- Group
     if tonumber(key) then
         return RaidInfo.MatchGroup(tonumber(key))
     end
-    -- Assume class
-    return RaidInfo.MatchClass(key)
+    return nil
 end
 
 -- Scans the raid returns two data tables `raid_info`, `class_players`.
@@ -83,9 +105,8 @@ function RaidInfo.Scan(class, excluded_players, group_blacklist, group_whitelist
         local player = getNameClassGroup(i)
         -- Setup raid info
         if not raid_info.groups[player.group] then
-            -- Check group is not blacklisted
-            if group_blacklist and containsMatch(group_blacklist, player) then
-                -- Do nothing
+            -- Check group is black / white listed
+            if group_blacklist and containsMatch(group_blacklist, player) then -- Do nothing
             elseif not group_whitelist or containsMatch(group_whitelist, player) then
                 raid_info.groups[player.group] = true
                 raid_info.group_count = raid_info.group_count + 1

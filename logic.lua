@@ -20,13 +20,14 @@ function BuffDuty.generateDuties(cmd, raid_info, class_players)
         local duty = {}
         duty["name"] = name
         duty["i"] = 1
-        if raid_info.group_count == 1 then
-            duty["s"] = ""
-            duty["groups"] = string.format("%d", raid_info.group_min)
-        else
-            duty["s"] = "s"
-            duty["groups"] = string.format("%d - %d", raid_info.group_min, raid_info.group_max)
+        local groups = ""
+        for i, v in ipairs(raid_info.groups) do
+            if v then 
+                groups = groups .. i .. ","
+            end
         end
+        groups = groups:sub(1, -2) -- remove last ","
+        duty["groups"] = groups
         local duty_list = {}
         duty_list[name] = duty
         return duty_list

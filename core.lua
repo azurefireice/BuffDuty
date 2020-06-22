@@ -56,6 +56,8 @@ local function executeDuty(input)
         excluded = {},
         order = nil,
         assign = nil,
+        group_blacklist = nil,
+        group_whitelist = nil,
         -- Logic settings
         own_group = {},
         -- Custom message settings, listed here for reference
@@ -74,6 +76,13 @@ local function executeDuty(input)
     if BuffDuty.Console.parseDutyCommand(cmd, args) then
         -- Scan the raid
         local raid_info, class_players = BuffDuty.RaidInfo.Scan(cmd.class, cmd.excluded, cmd.group_blacklist, cmd.group_whitelist)
+        -- Check we have groups to assign
+        if raid_info.group_count == 0 then
+            BuffDuty.printInfoMessage("All raid groups excluded, no duties to assign.")
+            return
+        end
+        local limited_duty = cmd.group_blacklist or cmd.group_whitelist
+        
         -- Generate a cache hash key
         local cache_key = BuffDuty.Cache.generateHash(raid_info, class_players)
         -- Retrieve or generate duties
@@ -86,7 +95,7 @@ local function executeDuty(input)
             BuffDuty.Cache:AddEntry(cache_key, duties)
         end
 
-        BuffDuty.printDuties(cmd, cmd.channel_type, cmd.channel_id, duties)
+        BuffDuty.printDuties(cmd, cmd.channel_type, cmd.channel_id, duties, limited_duty)
     end
 end
 

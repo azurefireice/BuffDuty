@@ -24,7 +24,7 @@ local function macroReplace(input, macro_table)
     return input
 end
 
-function BuffDuty.printDuties(cmd, channel_type, channel_id, duty_table)
+function BuffDuty.printDuties(cmd, channel_type, channel_id, duty_table, limited_duty)
     if not duty_table then return end
 
     -- Local aliases
@@ -49,7 +49,7 @@ function BuffDuty.printDuties(cmd, channel_type, channel_id, duty_table)
     duty_macros["s"] = (duty_count > 1) and "s" or ""
 
     -- Only a single player has been assigned buffing duty
-    if duty_count == 1 then
+    if duty_count == 1 and not limited_duty then
         local player_name, player_macros = next(duty_table)
         if channel_type == BuffDuty.CHANNELS.WHISPER then
             local single_whisper = cmd.single_whisper or messages.single_whisper
