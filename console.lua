@@ -137,6 +137,41 @@ local function parseAssign(input)
     return assign
 end
 
+local function parseGroupList(input)
+    local value = string.match(input, "%b{}") -- Match everything between { and } inclusive
+    if not value then return nil end
+    value = utils.stringTrim(value, "{", "}")
+    
+    local list = utils.stringSplit(value, ",")
+
+    local black_list = nil
+    local white_list = nil
+    for i = 1, #list do
+        local is_black_list = false
+        if string.sub(list[i], 1, 1) == "!" then
+            value = string.sub(list[i], 2, -1)
+            local func = BuffDuty.RaidInfo.GetMatchFunction(value)
+            if func then
+                if not black_list then
+                    black_list = {}
+                end
+                table.insert(black_list, func)
+            end
+        else
+            value = list[i]
+            local func = BuffDuty.RaidInfo.GetMatchFunction(value)
+            if func then
+                if not white_list then
+                    white_list = {}
+                end
+                table.insert(white_list, func)
+            end
+        end
+    end
+
+    return black_list, white_list
+end
+
 -- Command for /buffduty
 function Console.parseDutyCommand(cmd, args)
     --local args = {...} -- Argument list
@@ -225,6 +260,10 @@ function Console.parseDutyCommand(cmd, args)
     local assign = {}
     assign.execute = function(cmd, value) cmd.assign = parseAssign(value) end
     option_table["a"] = assign
+
+    local groups = {}
+    groups.execute = function(cmd, value) cmd.group_blacklist, cmd.group_whitelist = parseGroupList(value) end
+    option_table["g"] = groups
 
     local own_group = {has_value = true}
     own_group.execute = function(cmd, value) cmd.own_group = utils.stringSplitAsFlags(value, ",") end

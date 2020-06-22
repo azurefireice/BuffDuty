@@ -73,7 +73,7 @@ local function executeDuty(input)
     local args = pack(LibStub("AceConsole-3.0"):GetArgs(input, max_args))
     if BuffDuty.Console.parseDutyCommand(cmd, args) then
         -- Scan the raid
-        local raid_info, class_players = BuffDuty.RaidInfo.Scan(cmd.class, cmd.excluded)
+        local raid_info, class_players = BuffDuty.RaidInfo.Scan(cmd.class, cmd.excluded, cmd.group_blacklist, cmd.group_whitelist)
         -- Generate a cache hash key
         local cache_key = BuffDuty.Cache.generateHash(raid_info, class_players)
         -- Retrieve or generate duties
