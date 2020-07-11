@@ -78,7 +78,7 @@ function BuffDuty.printDuties(cmd, channel_type, channel_id, duty_table)
             if player_name == UnitName("player") then -- Print info message instead of whispering yourself
                 printInfoMessage(duty_whisper, "ffff78ea")
             else
-                whisper_message = string.format(messages.message_title, whisper_message)
+                duty_whisper = string.format(messages.message_title, duty_whisper)
                 SendChatMessage(duty_whisper, channel_type, nil, player_name)
             end
         end

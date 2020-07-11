@@ -1,3 +1,9 @@
+## [1.6.1] - 2020-06-22 ##
+### Bug Fixes
+
+### Fixed ###
+ * Fixed duty whispers accumulating title headers
+
 ## [1.6.0] - 2020-06-06 ##
 ### Restructure of logic, BuffDuty options and help
 
