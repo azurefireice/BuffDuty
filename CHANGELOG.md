@@ -1,3 +1,7 @@
+## [1.6.2] - 2021-06-02 ##
+### Added ###
+ * Support for Burning Crusade Classic
+
 ## [1.6.1] - 2020-06-22 ##
 ### Bug Fixes
 
