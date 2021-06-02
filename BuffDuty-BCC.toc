@@ -2,7 +2,7 @@
 ## X-Min-Interface: 20501
 ## Title: |cffffe00a•|r|cffd0021aBuff|r|cffff9d00Duty|r|cffffe00a•|r
 ## Author: AzureFireIce
-## Version: 1.6.1
+## Version:  @project-version@
 ## SavedVariables: BuffDutyDB
 
 libs\LibStub\LibStub.lua
