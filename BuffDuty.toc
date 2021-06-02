@@ -1,5 +1,5 @@
-## Interface: 11304
-## X-Min-Interface: 11304
+## Interface: 11307
+## X-Min-Interface: 11307
 ## Title: |cffffe00a•|r|cffd0021aBuff|r|cffff9d00Duty|r|cffffe00a•|r
 ## Author: AzureFireIce
 ## Version: @project-version@
